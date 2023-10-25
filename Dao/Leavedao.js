@@ -15,6 +15,13 @@ exports.Dao_view = async (user_id) => {
     throw error;
   }
 };
+exports.Dao_saw = async (Status) => {
+  try {
+    return await Leave.findByStatus(Status);
+  } catch (error) {
+    throw error;
+  }
+};
 
 exports.Dao_update = async (_id, staffData) => {
   try {
