@@ -33,6 +33,7 @@ exports.see = async (req, res) => {
     const balanceLeaves = {
       Casualleave: staffMember.Casualleave,
       Medicalleave: staffMember.Medicalleave,
+      Menstrualleave: staffMember.Menstrualleave,
     };
 
     return res.json({
