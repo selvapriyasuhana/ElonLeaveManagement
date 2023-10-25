@@ -94,4 +94,11 @@ const leaveSchema = new mongoose.Schema({
 
 const Leave = mongoose.model("Leave", leaveSchema);
 
+Leave.findByStatus = async function (Status) {
+  try {
+    return await this.find({ Status }).exec();
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = Leave;
