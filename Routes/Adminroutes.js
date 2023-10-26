@@ -149,8 +149,12 @@ router.post("/staff/register", async (req, res) => {
       email,
       Casualleaves,
       Medicalleaves,
-      Menstrualleaves,
     } = req.body;
+     let Menstrualleaves = 0;
+
+    if (Gender === "female") {
+      Menstrualleaves = 12; 
+    }
 
     const encryptedPassword = cryptr.encrypt(password);
 
