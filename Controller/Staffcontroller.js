@@ -8,7 +8,7 @@ exports.index = async (req, res) => {
     const user = await service.Service_index();
     res.json({
       status: "Success",
-      message: "sign in successfully",
+      message: "Get by All staff Details",
       data: user,
     });
   } catch (error) {
