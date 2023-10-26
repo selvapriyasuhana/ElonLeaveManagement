@@ -137,7 +137,7 @@ router.post("/register", async (req, res) => {
 });*/
 
 const Staffcontroller = require("../Controller/Staffcontroller.js");
-router.route("/user").get(Staffcontroller.index);
+router.route("/get_all").get(Staffcontroller.index);
 
 router.route("/balance/:username").get(Staffcontroller.see);
 
