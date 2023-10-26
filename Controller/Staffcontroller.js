@@ -75,6 +75,12 @@ exports.update = async (req, res) => {
     const { username } = req.params;
 
     const userData = {
+      Dateofjoining: req.body.Dateofjoining,
+      Name: req.body.Name,
+      Age: req.body.Age,
+      Gender: req.body.Gender,
+      DOB: req.body.DOB,
+      Contact: req.body.Contact,
       email: req.body.email,
       password: req.body.password,
       Casualleave: req.body.Casualleave,
