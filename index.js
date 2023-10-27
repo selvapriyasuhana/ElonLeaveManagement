@@ -35,6 +35,6 @@ app.listen(port, () => {
 app.get("/", (req, res) => res.send("Welcome to leave management system"));
 
 app.use("/Admin", AdminRoutes);
-app.use("/Staff", StaffRoutes);
+app.use("/staff", StaffRoutes);
 app.use("/Leave", LeaveRoutes);
 module.exports = app;
