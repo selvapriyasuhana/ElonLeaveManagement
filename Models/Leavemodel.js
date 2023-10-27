@@ -101,4 +101,11 @@ Leave.findByStatus = async function (Status) {
     throw error;
   }
 };
+Leave.findByName = async function (Name) {
+  try {
+    return await this.find({ Name }).exec();
+  } catch (error) {
+    throw error;
+  }
+};
 module.exports = Leave;
