@@ -59,18 +59,35 @@ router.post("/register", async (req, res) => {
       username,
       email,
     } = req.body;
-    const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
+   // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
 
+    
     const currentDate = new Date();
     const joiningDate = new Date(Dateofjoining);
     const joiningMonth = joiningDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based month
 
-    // Calculate leave balances based on the default values and joining month
-    const userCasualleave = admin.Casualleaves - (joiningMonth - 1);
-    const userMedicalleave = admin.Medicalleaves - (joiningMonth - 1);
-    const userMenstrualleave = admin.Menstrualleaves - (joiningMonth - 1);
+    // Calculate userCasualleave and userMedicalleave based on the joining month
+    let userCasualleaves = 12 - (joiningMonth - 1);
+    let userMedicalleaves = 7 - (joiningMonth - 1);
 
-    //const encryptedPassword = cryptr.encrypt(password);
+    console.log("Joining Month: ", joiningMonth);
+    console.log("User Casual Leave: ", userCasualleaves);
+    console.log("User Medical Leave: ", userMedicalleaves);
+
+    // Ensure that userCasualleave and userMedicalleave are not negative
+    userCasualleaves = Math.max(userCasualleaves, 0);
+    userMedicalleaves = Math.max(userMedicalleaves, 0);
+    console.log("User Casual Leave (after max): ", userCasualleaves);
+    console.log("User Medical Leave (after max): ", userMedicalleaves);
+
+    // Set default values for leave balances
+    let userMenstrualleaves = 0;
+
+    // Check the gender and adjust Menstrualleaves based on the condition for females
+    if (Gender === "female") {
+      userMenstrualleaves = 12;
+    }
+
 
     const encryptedPassword = cryptr.encrypt(password);
 
@@ -87,9 +104,9 @@ router.post("/register", async (req, res) => {
       /*Casualleave,
       Medicalleave,
       Menstrualleave,*/
-      Casualleave: userCasualleave,
-      Medicalleave: userMedicalleave,
-      Menstrualleave: userMenstrualleave,
+      Casualleaves: userCasualleaves,
+      Medicalleaves: userMedicalleaves,
+      Menstrualleaves: userMenstrualleaves,
     });
 
     await user.save();
