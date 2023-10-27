@@ -191,7 +191,7 @@ router.post("/register", async (req, res) => {
 const Leavecontroller = require("../Controller/Leavecontroller.js");
 router.route("/:get_all").get(Leavecontroller.index);
 router.route("/user/status/:Status").get(Leavecontroller.saw);
-router.route("/user/name/:Name").get(Controller.look);
+router.route("/user/name/:Name").get(Leavecontroller.look);
 router.route("/user/id/:user_id").get(Leavecontroller.view);
 router.route("/:user_id").put(Leavecontroller.update);
 router.route("/:user_id").patch(Leavecontroller.update);
