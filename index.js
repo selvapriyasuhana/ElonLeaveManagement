@@ -36,5 +36,5 @@ app.get("/", (req, res) => res.send("Welcome to leave management system"));
 
 app.use("/Admin", AdminRoutes);
 app.use("/staff", StaffRoutes);
-app.use("/Leave", LeaveRoutes);
+app.use("/staff/leave", LeaveRoutes);
 module.exports = app;
