@@ -22,9 +22,9 @@ exports.Service_saw = async (Status) => {
     throw error;
   }
 };
-exports.Service_look = async (Name) => {
+exports.Service_look = async (username) => {
   try {
-    return await Dao.Dao_look(Name);
+    return await Dao.Dao_look(username);
   } catch (error) {
     throw error;
   }
