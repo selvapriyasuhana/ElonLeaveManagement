@@ -162,7 +162,7 @@ router.route("/get_all").get(Staffcontroller.index);
 router.route("/balanceleaves/:username").get(Staffcontroller.see);
 
 router
-  .route("/user/:username")
+  .route("/detail/:username")
   .get(Staffcontroller.view)
   .patch(Staffcontroller.update)
   .put(Staffcontroller.update)
