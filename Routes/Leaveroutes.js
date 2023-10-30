@@ -30,14 +30,14 @@ router.post("/apply", async (req, res) => {
     }
 
     if (
-      Leavetype !== "Casualleave" &&
-      Leavetype !== "Medicalleave" &&
-      Leavetype !== "Menstrualleave"
+      Leavetype !== "Casualleaves" &&
+      Leavetype !== "Medicalleaves" &&
+      Leavetype !== "Menstrualleaves"
     ) {
       return res.status(400).json({ message: "Invalid leave type." });
     }
 
-    if (Leavetype === "Menstrualleave" && staffMember.Gender !== "female") {
+    if (Leavetype === "Menstrualleaves" && staffMember.Gender !== "female") {
       return res.json({
         status: "Error",
         message: "Menstrual leave is only applicable for women",
@@ -121,7 +121,7 @@ router.post("/apply", async (req, res) => {
         });
       }
     }*/
-    if (Leavetype !== "Menstrualleave") {
+    if (Leavetype !== "Menstrualleave"s) {
       // If it's not a Menstrual leave request, proceed as before
       // Check available leave balance
       if (staffMember[Leavetype] < Numberofdays) {
@@ -133,7 +133,7 @@ router.post("/apply", async (req, res) => {
       // For Menstrual leave request, check if it's already requested for the current month
       const existingRequest = await Leave.findOne({
         username,
-        Leavetype: "Menstrualleave",
+        Leavetype: "Menstrualleaves",
         StartDate: {
           $gte: new Date(StartDate),
           $lt: new Date(StartDate).setMonth(new Date(StartDate).getMonth() + 1),
