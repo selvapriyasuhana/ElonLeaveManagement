@@ -58,6 +58,7 @@ router.post("/register", async (req, res) => {
       password,
       username,
       email,
+      usertype,
     } = req.body;
    // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
 
