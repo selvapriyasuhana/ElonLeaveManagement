@@ -8,7 +8,7 @@ exports.index = async (req, res) => {
     const user = await service.Service_index();
     res.json({
       status: "Success",
-      message: "Get by All staff Details",
+      message: " All staff Details Viewed By GET Method",
       data: user,
     });
   } catch (error) {
@@ -59,7 +59,7 @@ exports.view = async (req, res) => {
     }
     res.json({
       status: "Success",
-      message: "Retrieved SIGNIN  details successfully",
+      message: "Given Username Staff details retrieved successfully",
       data: user,
     });
   } catch (error) {
