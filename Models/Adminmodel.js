@@ -20,7 +20,7 @@ var Schema = mongoose.Schema({
     type: Number,
     length: 10,
   },*/
-  Casualleaves: { type: Number, default: 12 },
+  /*Casualleaves: { type: Number, default: 12 },
   Medicalleaves: { type: Number, default: 7 },
   Menstrualleaves: { type: Number},
 
