@@ -105,6 +105,7 @@ router.post("/register", async (req, res) => {
       Contact,
       username,
       email,
+      usertype,
       /*Casualleave,
       Medicalleave,
       Menstrualleave,*/
