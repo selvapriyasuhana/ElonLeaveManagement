@@ -159,7 +159,7 @@ router.post("/register", async (req, res) => {
 const Staffcontroller = require("../Controller/Staffcontroller.js");
 router.route("/get_all").get(Staffcontroller.index);
 
-router.route("/balance/:username").get(Staffcontroller.see);
+router.route("/balanceleaves/:username").get(Staffcontroller.see);
 
 router
   .route("/user/:username")
