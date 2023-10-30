@@ -1,4 +1,4 @@
-var mongoose = require("mongoose");
+/*var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema({
 /*  Name: {
@@ -47,7 +47,7 @@ var Schema = mongoose.Schema({
   },
 });*/
 
-Schema.path("username").validate(async (username) => {
+/*Schema.path("username").validate(async (username) => {
   const usernameCount = await mongoose.models.admin.countDocuments({
     username,
   });
@@ -57,4 +57,4 @@ Schema.path("username").validate(async (username) => {
 var admin_signin = (module.exports = mongoose.model("admin", Schema));
 module.exports.get = function (limit) {
   return admin_signin.find().limit(limit).exec();
-};
+};*/
