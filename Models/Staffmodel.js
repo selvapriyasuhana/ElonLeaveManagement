@@ -11,7 +11,7 @@ const staffSchema = new mongoose.Schema({
   },
   Age: {
     required: false,
-    type: Number,
+    type: String,
   },
   Gender: {
     type: String,
