@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema({
-  Name: {
+/*  Name: {
     required: false,
     type: String,
   },
@@ -19,12 +19,12 @@ var Schema = mongoose.Schema({
     required: false,
     type: Number,
     length: 10,
-  },
+  },*/
   Casualleaves: { type: Number, default: 12 },
   Medicalleaves: { type: Number, default: 7 },
   Menstrualleaves: { type: Number},
 
-  email: {
+ /* email: {
     type: String,
     required: false,
     unique: true,
@@ -45,7 +45,7 @@ var Schema = mongoose.Schema({
     default: ["Admin"],
     required: true,
   },
-});
+});*/
 
 Schema.path("username").validate(async (username) => {
   const usernameCount = await mongoose.models.admin.countDocuments({
