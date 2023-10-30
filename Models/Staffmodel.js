@@ -55,7 +55,7 @@ const staffSchema = new mongoose.Schema({
   usertype: {
     type: [String],
     enum: ["Admin", "Staff"],
-    default: ["Staff"],
+    default: "Staff",
     required: true,
   },
 });
