@@ -89,7 +89,7 @@ exports.update = async (req, res) => {
     };
 
     if (userData.password) {
-      adminData.password = cryptr.encrypt(userData.password);
+      userData.password = cryptr.encrypt(userData.password);
     }
 
     const updatedUser = await service.Service_update(username, userData);
