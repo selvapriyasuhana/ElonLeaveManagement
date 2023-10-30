@@ -22,9 +22,9 @@ exports.Dao_saw = async (Status) => {
     throw error;
   }
 };
-exports.Dao_look = async (Name) => {
+exports.Dao_look = async (username) => {
   try {
-    return await Leave.findByName(Name); // Use "user_id" directly
+    return await Leave.findByusername(username); // Use "user_id" directly
   } catch (error) {
     throw error;
   }
