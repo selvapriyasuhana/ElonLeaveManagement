@@ -121,7 +121,7 @@ router.post("/apply", async (req, res) => {
         });
       }
     }*/
-    if (Leavetype !== "Menstrualleave"s) {
+    if (Leavetype !== "Menstrualleaves") {
       // If it's not a Menstrual leave request, proceed as before
       // Check available leave balance
       if (staffMember[Leavetype] < Numberofdays) {
