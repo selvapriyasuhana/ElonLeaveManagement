@@ -31,9 +31,9 @@ exports.see = async (req, res) => {
 
     // Extract and send the balance leaves information
     const balanceLeaves = {
-      Casualleave: staffMember.Casualleave,
-      Medicalleave: staffMember.Medicalleave,
-      Menstrualleave: staffMember.Menstrualleave,
+      Casualleaves: staffMember.Casualleaves,
+      Medicalleaves: staffMember.Medicalleaves,
+      Menstrualleaves: staffMember.Menstrualleaves,
     };
 
     return res.json({
@@ -83,9 +83,9 @@ exports.update = async (req, res) => {
       Contact: req.body.Contact,
       email: req.body.email,
       password: req.body.password,
-      Casualleave: req.body.Casualleave,
-      Medicalleave: req.body.Medicalleave,
-      Menstrualleave: req.body.Menstrualleave,
+      Casualleaves: req.body.Casualleaves,
+      Medicalleaves: req.body.Medicalleaves,
+      Menstrualleaves: req.body.Menstrualleaves,
     };
 
     if (userData.password) {
