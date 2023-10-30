@@ -9,7 +9,7 @@ router.get("/Leavepage", (req, res) => {
   });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/apply", async (req, res) => {
   try {
     const {
       username,
