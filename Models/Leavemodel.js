@@ -101,9 +101,9 @@ Leave.findByStatus = async function (Status) {
     throw error;
   }
 };
-Leave.findByName = async function (Name) {
+Leave.findByusername = async function (username) {
   try {
-    return await this.find({ Name }).exec();
+    return await this.find({ username }).exec();
   } catch (error) {
     throw error;
   }
