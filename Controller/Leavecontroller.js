@@ -60,16 +60,16 @@ exports.saw = async (req, res) => {
 };
 exports.look = async (req, res) => {
   try {
-    const staff = await Service.Service_look(req.params.Name);
+    const staff = await Service.Service_look(req.params.username);
     if (!staff || staff.length === 0) {
       return res.json({
         status: "Error",
-        message: "No leave requests found with the specified Name",
+        message: "No leave requests found with the specified username",
       });
     }
     res.json({
       status: "Success",
-      message: " Given Name of the leave requests are retrieved",
+      message: " Given username of the leave requests are retrieved",
       data: staff,
     });
   } catch (error) {
