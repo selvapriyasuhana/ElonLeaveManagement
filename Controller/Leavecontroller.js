@@ -283,15 +283,15 @@ exports.update = async (req, res) => {
       console.log("Numberofdays:", Numberofdays);
       console.log(
         "Staff member's leave balances:",
-        user.Casualleave,
-        user.Medicalleave,
-        user.Menstrualleave
+        user.Casualleaves,
+        user.Medicalleaves,
+        user.Menstrualleaves
       );
       // Determine which leave balance to update based on the leave type
-      /*if (Leavetype === "Casualleave") {
-        user.Casualleave -= Numberofdays;
-      } else if (Leavetype === "Medicalleave") {
-        user.Medicalleave -= Numberofdays;
+      /*if (Leavetype === "Casualleaves") {
+        user.Casualleaves -= Numberofdays;
+      } else if (Leavetype === "Medicalleaves") {
+        user.Medicalleaves -= Numberofdays;
       } else {
         return res.json({
           status: "Error",
@@ -369,7 +369,7 @@ exports.update = async (req, res) => {
       }*/
 
       // Save the updated user record in the "users" collection
-      if (Leavetype === "Menstrualleave" && user.Gender !== "female") {
+      if (Leavetype === "Menstrualleaves" && user.Gender !== "female") {
         return res.json({
           status: "Error",
           message: "Menstrual leave is only applicable for women",
@@ -377,12 +377,12 @@ exports.update = async (req, res) => {
       }
 
       // Deduct the appropriate leave balance based on the leave type
-      if (Leavetype === "Casualleave") {
-        user.Casualleave -= Numberofdays;
-      } else if (Leavetype === "Medicalleave") {
-        user.Medicalleave -= Numberofdays;
-      } else if (Leavetype === "Menstrualleave") {
-        user.Menstrualleave -= Numberofdays;
+      if (Leavetype === "Casualleaves") {
+        user.Casualleaves -= Numberofdays;
+      } else if (Leavetype === "Medicalleaves") {
+        user.Medicalleaves -= Numberofdays;
+      } else if (Leavetype === "Menstrualleaves") {
+        user.Menstrualleaves -= Numberofdays;
       } else {
         return res.json({
           status: "Error",
@@ -391,9 +391,9 @@ exports.update = async (req, res) => {
       }
 
       if (
-        user.Casualleave < 0 ||
-        user.Medicalleave < 0 ||
-        user.Menstrualleave < 0
+        user.Casualleaves < 0 ||
+        user.Medicalleaves < 0 ||
+        user.Menstrualleaves < 0
       ) {
         return res.json({
           status: "Error",
