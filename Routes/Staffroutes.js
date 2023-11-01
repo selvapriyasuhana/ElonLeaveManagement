@@ -62,7 +62,16 @@ router.post("/register", async (req, res) => {
     } = req.body;
    // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
 
-    
+    if (
+      typeof Contact !== "string" ||
+      Contact.length !== 10 ||
+      isNaN(Number(Contact))
+    ) {
+      return res.status(400).json({
+        message: "Contact should be a 10-digit number",
+      });
+    }
+
     const currentDate = new Date();
     const joiningDate = new Date(Dateofjoining);
     const joiningMonth = joiningDate.getMonth() + 1; // Adding 1 because getMonth() returns zero-based month
