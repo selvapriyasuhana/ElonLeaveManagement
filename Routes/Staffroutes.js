@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const User = require("../Models/Staffmodel");
-const Admin = require("../Models/Adminmodel");
+//const Admin = require("../Models/Adminmodel");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("priya");
-/*const {
-  generateUniqueToken,
-  sendPasswordResetEmail,
-} = require("./passwordResetUtils"); */ // Adjust the path as needed
+const nodemailer = require("nodemailer");
+const { generateRandomToken } = require("../utils/utils.js");
+const verifyToken = require("../middleware/middle.js");
+const emailservice = require("../Service/emailservice.js");
 
 router.get("/Staff", (req, res) => {
   res.json({
@@ -45,6 +45,68 @@ router.post("/signin", async (req, res) => {
     });
   }
 });
+router.post("/forgotpassword", async (req, res) => {
+  try {
+    const { email } = req.body;
+    try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      const resetToken = generateRandomToken();
+
+      user.resetToken = resetToken;
+      await user.save();
+
+      await emailservice.sendEmail(
+        email,
+        "Password Reset Request",
+        `Use this link to reset your password: http://localhost:5000/staff/resetpassword?token=${resetToken}`
+      );
+
+      res.status(200).send("Password reset link sent to your email");
+    } catch (error) {
+      console.log("Error inside the try block:", error);
+      res.status(500).send("Error in processing request");
+    }
+  } catch (error) {
+    console.log("Outer error in processing request:", error); //
+    res.status(500).send("Outer error in processing request");
+  }
+});
+router.post("/resetpassword", async (req, res) => {
+  try {
+    const { token, newpassword } = req.body;
+    try {
+      const user = await User.findOne({ resetToken: token });
+
+      if (!user) {
+        console.error("No user found with the provided token:", token);
+        return res.status(404).send("Invalid or expired token");
+      }
+      const encryptedPassword = cryptr.encrypt(newpassword);
+
+      user.password = encryptedPassword;
+      user.resetToken = null;
+      await user.save();
+
+      /*user.password = newpassword;
+      user.resetToken = null;
+      await user.save();*/
+
+      res.status(200).send("Password reset successful");
+    } catch (error) {
+      console.error("Error during password reset:", error);
+      res.status(500).send("Error in processing request");
+    }
+  } catch (error) {
+    console.error("Outer error during password reset:", error);
+    res.status(500).send("Error in processing request");
+  }
+});
+
 
 router.post("/register", async (req, res) => {
   try {
@@ -136,36 +198,6 @@ router.post("/register", async (req, res) => {
     });
   }
 });
-/*router.post("/forgot-password", async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    const staffMember = await User.findOne({ email });
-
-    if (!staffMember) {
-      return res.status(404).json({ message: "Staff member not found." });
-    }
-
-    // Generate a unique reset token
-    const resetToken = generateUniqueToken();
-
-    // Save the reset token in the database
-    staffMember.passwordResetToken = resetToken;
-    await staffMember.save();
-
-    // Send the password reset email with the reset token
-    sendPasswordResetEmail(email, resetToken);
-
-    return res.json({
-      message: "Password reset instructions sent to your email.",
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "An error occurred",
-      error: error.message,
-    });
-  }
-});*/
 
 const Staffcontroller = require("../Controller/Staffcontroller.js");
 router.route("/get_all").get(Staffcontroller.index);
