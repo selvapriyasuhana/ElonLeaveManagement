@@ -58,6 +58,8 @@ const staffSchema = new mongoose.Schema({
     default: "Staff",
     required: true,
   },
+  resetToken: String,
+  resetTokenExpiration: Date,
 });
 
 const Staffdetails = mongoose.model("Staffdetails", staffSchema);
