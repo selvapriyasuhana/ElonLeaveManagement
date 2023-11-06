@@ -156,7 +156,7 @@ router.post("/register", async (req, res) => {
     let userMenstrualleaves = 0;
 
     // Check the gender and adjust Menstrualleaves based on the condition for females
-    if (Gender === "female") {
+    if (Gender === "Female") {
  
       userMenstrualleaves = 12 - (joiningMonth - 1);
       userMenstrualleaves = Math.max(userMenstrualleaves, 0);
