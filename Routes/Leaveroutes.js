@@ -37,7 +37,7 @@ router.post("/apply", async (req, res) => {
       return res.status(400).json({ message: "Invalid leave type." });
     }
 
-    if (Leavetype === "Menstrualleaves" && staffMember.Gender !== "female") {
+    if (Leavetype === "Menstrualleaves" && staffMember.Gender !== "Female") {
       return res.json({
         status: "Error",
         message: "Menstrual leave is only applicable for women",
