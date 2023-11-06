@@ -146,11 +146,11 @@ router.post("/apply", async (req, res) => {
         });
       }
     }
-    if (Numberofdays > 1) {
+    /*if (Numberofdays > 1) {
       return res.status(400).json({
         message: "You can only request one day for Menstrual leave per month.",
       });
-    }
+    }*/
 
     const staff = Leave({
       username,
