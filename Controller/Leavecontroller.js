@@ -213,7 +213,7 @@ exports.update = async (req, res) => {
       }*/
 
       // Save the updated user record in the "users" collection
-      if (Leavetype === "Menstrualleaves" && user.Gender !== "Female") {
+      if (Leavetype === "Menstrualleaves" && user.Gender !== "female") {
         return res.json({
           status: "Error",
           message: "Menstrual leave is only applicable for women",
