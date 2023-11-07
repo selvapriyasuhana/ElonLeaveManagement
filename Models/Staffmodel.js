@@ -58,6 +58,10 @@ const staffSchema = new mongoose.Schema({
     default: "Staff",
     required: true,
   },
+  ORGName: {
+    type: String,
+    required: true,
+  },
   resetToken: String,
   resetTokenExpiration: Date,
 });
