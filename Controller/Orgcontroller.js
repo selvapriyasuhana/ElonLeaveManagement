@@ -1,14 +1,14 @@
-const service = require("../Service/Adminservice.js");
+const service = require("../Service/Orgservice.js");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("priya");
 
 exports.index = async (req, res) => {
   try {
-    const admin = await service.Service_index();
+    const Organization = await service.Service_index();
     res.json({
       status: "Success",
       message: "sign in successfully",
-      data: admin,
+      data: Organization,
     });
   } catch (error) {
     res.status(500).json({
@@ -41,17 +41,17 @@ exports.index = async (req, res) => {
 };*/
 exports.view = async (req, res) => {
   try {
-    const admin = await service.Service_view(req.params.username);
-    if (!admin) {
+    const Organization = await service.Service_view(req.params.ORGName);
+    if (!Organization) {
       return res.json({
         status: "Error",
-        message: "User not found",
+        message: "Organization details not found",
       });
     }
     res.json({
       status: "Success",
-      message: "Retrieved SIGNIN  details successfully",
-      data: admin,
+      message: "Retrieved Organization  details successfully",
+      data: Organization,
     });
   } catch (error) {
     res.status(500).json({
@@ -63,35 +63,34 @@ exports.view = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const { username } = req.params;
+    const { ORGName } = req.params;
 
-    const adminData = {
-      Name: req.body.Name,
-      Age: req.body.Age,
-      Gender: req.body.Gender,
-      DOB: req.body.DOB,
+    const OrganizationData = {
+      ORGName: req.body.ORGName,
+      Address: req.body.Address,
       Contact: req.body.Contact,
-      email: req.body.email,
-      password: req.body.password,
     };
 
-    if (adminData.password) {
+    /*if (adminData.password) {
       adminData.password = cryptr.encrypt(adminData.password);
-    }
+    }*/
 
-    const updatedAdmin = await service.Service_update(username, adminData);
+    const updatedOrganization = await service.Service_update(
+      ORGName,
+      OrganizationData
+    );
 
-    if (!updatedAdmin) {
+    if (!updatedOrganization) {
       return res.json({
         status: "Error",
-        message: "Username incorrect or update failed",
+        message: "Organization Details failed to Update",
       });
     }
 
     res.json({
       status: "Success",
-      message: "Admin added the Staff details successfully",
-      data: updatedAdmin,
+      message: "Organization details updated successfully",
+      data: updatedOrganization,
     });
   } catch (error) {
     res.status(500).json({
@@ -103,16 +102,16 @@ exports.update = async (req, res) => {
 
 exports.Delete = async (req, res) => {
   try {
-    const deletedCount = await service.Service_Delete(req.params.username);
+    const deletedCount = await service.Service_Delete(req.params.ORGName);
     if (deletedCount === 0) {
       return res.json({
         status: "Error",
-        message: "please check your username",
+        message: "please check your Organizationname",
       });
     }
     res.json({
       status: "Success",
-      message: "Admin deleted given username staff details successfully",
+      message: " Given Organization details deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
