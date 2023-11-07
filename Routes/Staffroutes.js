@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../Models/Staffmodel");
-//const Admin = require("../Models/Adminmodel");
+const Organization = require("../Models/Orgmodel.js");
 const Cryptr = require("cryptr");
 const cryptr = new Cryptr("priya");
 const nodemailer = require("nodemailer");
@@ -16,7 +16,15 @@ router.get("/Staff", (req, res) => {
 });
 router.post("/signin", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, ORGName, password } = req.body;
+  const organization = await Organization.findOne({ ORGName });
+
+    if (!organization) {
+      return res.status(404).json({
+        message: "Organization not found. Staff sign-in denied.",
+      });
+    }
+
 
     const user = await User.findOne({ username });
 
@@ -121,8 +129,16 @@ router.post("/register", async (req, res) => {
       username,
       email,
       usertype,
+      ORGName,
     } = req.body;
    // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
+const organization = await Organization.findOne({ ORGName });
+
+    if (!organization) {
+      return res.status(404).json({
+        message: "Organization not found. Staff registration denied.",
+      });
+    }
 
     if (
       typeof Contact !== "string" ||
@@ -177,12 +193,10 @@ router.post("/register", async (req, res) => {
       username,
       email,
       usertype,
-      /*Casualleave,
-      Medicalleave,
-      Menstrualleave,*/
       Casualleaves: userCasualleaves,
       Medicalleaves: userMedicalleaves,
       Menstrualleaves: userMenstrualleaves,
+      ORGName,
     });
 
     await user.save();
