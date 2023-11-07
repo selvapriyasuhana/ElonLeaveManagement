@@ -14,7 +14,7 @@ const organizationSchema = new mongoose.Schema({
     country: String,
     postalCode: String,
   },
-  ontact: {
+  Contact: {
     phone: String,
     email: String,
   },
