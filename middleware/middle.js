@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const Admin = require("../Models/Adminmodel.js");
+/*const jwt = require("jsonwebtoken");
+//const Admin = require("../Models/Adminmodel.js");
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -20,4 +20,4 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-module.exports = verifyToken;
+module.exports = verifyToken;*/
