@@ -6,7 +6,7 @@ const cors = require("cors");
 var app = new express();
 var StaffRoutes = require("./Routes/Staffroutes.js");
 var LeaveRoutes = require("./Routes/Leaveroutes.js");
-//var AdminRoutes = require("./Routes/Adminroutes.js");
+var OrgRoutes = require("./Routes/Orgroutes.js");
 var mongodb = require("./Config.js/Mongoconfig.js");
 
 app.use(cors());
@@ -34,7 +34,7 @@ app.listen(port, () => {
 
 app.get("/", (req, res) => res.send("Welcome to leave management system"));
 
-//app.use("/Admin", AdminRoutes);
+app.use("/organization", OrgRoutes);
 app.use("/staff", StaffRoutes);
 app.use("/staff/leave", LeaveRoutes);
 module.exports = app;
