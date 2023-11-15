@@ -62,6 +62,11 @@ const staffSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  Role: {
+    type: String,
+    required: true,
+  },
+
   resetToken: String,
   resetTokenExpiration: Date,
 });
