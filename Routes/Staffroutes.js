@@ -7,6 +7,8 @@ const nodemailer = require("nodemailer");
 const { generateRandomToken } = require("../utils/utils.js");
 const verifyToken = require("../middleware/middle.js");
 const emailservice = require("../Service/emailservice.js");
+const { sendEmail } = require("../Service/emailservice.js");
+
 
 router.get("/Staff", (req, res) => {
   res.json({
