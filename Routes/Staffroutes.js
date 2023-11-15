@@ -132,6 +132,7 @@ router.post("/register", async (req, res) => {
       email,
       usertype,
       ORGName,
+      Role,
     } = req.body;
    // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
 const organization = await Organization.findOne({ ORGName });
@@ -199,6 +200,7 @@ const organization = await Organization.findOne({ ORGName });
       Medicalleaves: userMedicalleaves,
       Menstrualleaves: userMenstrualleaves,
       ORGName,
+      Role,
     });
 
     await user.save();
