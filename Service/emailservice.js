@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+/*const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -26,7 +26,7 @@ exports.sendEmail = (to, subject, text) => {
     }
   });
 };*/
-      return {
+    /*  return {
         success: false,
         message:
           "Email could not be sent. Please check the credentials and try again.",
@@ -40,4 +40,48 @@ exports.sendEmail = (to, subject, text) => {
       };
     }
   });
+};*/
+
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: "priyaecs95@gmail.com",
+    pass: "ykbhggznozmodutz",
+  },
+});
+
+const sendEmail = (to, subject, text) => {
+  return new Promise((resolve, reject) => {
+    const mailOptions = {
+      from: "priyaecs95@gmail.com",
+      to,
+      subject,
+      text,
+    };
+    // console.log("Preparing to send email...");
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        // console.error("Error sending email:", error);
+        reject({
+          success: false,
+          message:
+            "Email could not be sent. Please check the credentials and try again.",
+          errorDetails: error,
+        });
+      } else {
+        // console.log("Email sent:", info.response);
+        resolve({
+          success: true,
+          message: "Email sent successfully.",
+          info: info,
+        });
+      }
+    });
+  });
+};
+
+module.exports = {
+  sendEmail,
 };
