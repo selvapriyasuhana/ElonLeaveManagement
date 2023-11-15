@@ -1,4 +1,6 @@
 const Service = require("../Service/Leaveservice.js");
+const { sendEmail } = require("../Service/emailservice.js");
+
 
 exports.index = async (req, res) => {
   try {
