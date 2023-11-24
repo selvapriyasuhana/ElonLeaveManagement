@@ -19,6 +19,9 @@ const staffSchema = new mongoose.Schema({
   DOB: {
     type: String,
   },
+  Maritalstatus:{
+    type:String,
+  },
   Contact: {
     required: false,
     type: Number,
@@ -39,6 +42,10 @@ const staffSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+  },
+   Role: {
+    type: String,
+    required: true,
   },
   Casualleaves: {
     type: Number,
