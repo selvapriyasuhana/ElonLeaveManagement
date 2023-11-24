@@ -2,14 +2,21 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 const cors = require("cors");
+const dotenv = require("dotenv");
+const multer = require('multer');
+const AWS = require('aws-sdk');
 
 var app = new express();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 var StaffRoutes = require("./Routes/Staffroutes.js");
 var LeaveRoutes = require("./Routes/Leaveroutes.js");
 var OrgRoutes = require("./Routes/Orgroutes.js");
 var mongodb = require("./Config.js/Mongoconfig.js");
 
 app.use(cors());
+dotenv.config();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
