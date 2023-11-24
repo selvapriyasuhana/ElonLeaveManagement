@@ -9,7 +9,8 @@ const mime = require('mime-types');
 require('dotenv').config();
 
 const s3 = new AWS.S3({
-    region: 'US East (N. Virginia)', // Update with your region
+  //  region: 'US East (N. Virginia)', // Update with your region
+    region:'us-east-1',
    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     endpoint: 'https://s3.amazonaws.com',
