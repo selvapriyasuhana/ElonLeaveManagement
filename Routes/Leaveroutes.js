@@ -1,15 +1,44 @@
 const router = require("express").Router();
 const Leave = require("../Models/Leavemodel.js");
 const Staffdetails = require("../Models/Staffmodel.js");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const AWS = require('aws-sdk');
+const mime = require('mime-types');
+require('dotenv').config();
 
+const s3 = new AWS.S3({
+    region: 'US East (N. Virginia)', // Update with your region
+   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    endpoint: 'https://s3.amazonaws.com',
+  });
 router.get("/Leavepage", (req, res) => {
   res.json({
     status: "API Works",
     message: "Welcome to Staff leave API",
   });
 });
+const staffUploadsFolder = path.join('uploads', 'documents');
+if (!fs.existsSync(staffUploadsFolder)) {
+  fs.mkdirSync(staffUploadsFolder, { recursive: true });
+}
 
-router.post("/apply", async (req, res) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, staffUploadsFolder);
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
+
+router.post("/apply",upload.single('file'), async (req, res) => {
   try {
     const {
       username,
@@ -18,6 +47,7 @@ router.post("/apply", async (req, res) => {
       StartDate,
       EndDate,
       Numberofdays,
+      Replacementworker,
       Reason,
       // menstrualLeaveRequests,
       Command,
@@ -28,11 +58,126 @@ router.post("/apply", async (req, res) => {
     if (!staffMember) {
       return res.status(404).json({ message: "Staff member not found." });
     }
+ if (Leavetype === "Marriageleaves" && staffMember.Maritalstatus !== "Unmarried") {
+        return res.status(400).json({ message: "Marriage leaves are only applicable for unmarried staff members." });
+      }
+    
+           const joinMonth = new Date(staffMember.Dateofjoining).getMonth()+1;
+            const requestMonth = new Date(StartDate).getMonth()+1;
+            console.log("Join Month:", joinMonth);
+            console.log("Request Month:", requestMonth);
+            
+           // if (joinMonth === 0 && requestMonth <= requestMonth +2) {
+            if (requestMonth < joinMonth + 3) {  
+           console.log("Condition met: New staff members cannot apply for leave during the first three months.");
 
+                return res.status(400).json({
+                    message: "New staff members cannot apply for leave after joinning first three months.",
+                });
+            }
+            if (Leavetype === "Marriageleaves") {
+                const marriageDate = new Date(staffMember.MarriageDate);
+                const leaveStartDate = new Date(StartDate);
+          
+                // Check if the leave request is within one week before the marriage date
+                if (marriageDate.getTime() - leaveStartDate.getTime() > 7 * 24 * 60 * 60 * 1000) {
+                  return res.status(400).json({
+                    message: "Marriage leave requests should be made within one week before the marriage date.",
+                  });
+                }
+          
+                
+                if (!req.file || path.extname(req.file.originalname).toLowerCase() !== '.pdf') {
+                  return res.status(400).json({ message: 'An invitation PDF is required for Marriage Leaves.' });
+                }
+              }
+          
+       let s3ObjectUrl;
+    if ((Leavetype === "Sickleaves" || Leavetype === "Maternityleaves")) {
+        const leaveStartDate = new Date(StartDate);
+        const deadlineForSubmission = new Date(leaveStartDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+  
+        if ((Leavetype === "Sickleaves" && Numberofdays > 1) || (Leavetype === "Maternityleaves")) {
+          if (!req.file) {
+            return res.status(400).json({
+              message: `Medical certificate is required for ${Leavetype === "Sickleaves" ? "sick" : "maternity"} leaves. You have one week to submit the certificate.`,
+              deadline: deadlineForSubmission,
+            });
+          }
+const fileContent = fs.readFileSync(req.file.path);
+
+                // Dynamically determine Content-Type based on file extension
+                const fileExtension = path.extname(req.file.originalname).toLowerCase();
+                const contentType = mime.lookup(fileExtension) || 'application/octet-stream';
+        
+                const params = {
+                  
+                  Bucket: 'elonleave2023', // Replace with your bucket name
+                  Key: `medical_certificates/${req.file.filename}`,
+                  Body: fileContent,
+                  ContentType: contentType,
+
+                };
+          
+                const s3UploadResponse = await s3.upload(params).promise();
+                console.log('S3 Upload Response:', s3UploadResponse);
+                const s3BucketUrl = `https://elonleave2023.s3.amazonaws.com`; // Replace with your S3 bucket URL
+                const filePath = `medical_certificates/${req.file.filename}`;
+                 s3ObjectUrl = `${s3BucketUrl}/${filePath}`;
+        }
+    }
+         
+    let deadlineForSubmission = new Date(new Date(StartDate).getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    if (req.file) {
+      console.log("Processing certificate");
+      const fileContent = fs.readFileSync(req.file.path);
+
+      const fileExtension = path.extname(req.file.originalname).toLowerCase();
+      const contentType = mime.lookup(fileExtension) || 'application/octet-stream';
+
+      const params = {
+        Bucket: 'elonleave2023',
+        Key: `medical_certificates/${req.file.filename}`,
+        Body: fileContent,
+        ContentType: contentType,
+      };
+
+      const s3UploadResponse = await s3.upload(params).promise();
+      console.log('S3 Upload Response:', s3UploadResponse);
+      const s3BucketUrl = `https://elonleave2023.s3.amazonaws.com`;
+      const filePath = `medical_certificates/${req.file.filename}`;
+      s3ObjectUrl = `${s3BucketUrl}/${filePath}`;
+
+                // Attach the medical certificate details to the Leave document
+                staffMember.Medicalcertificate = {
+                  originalName: req.file.originalname,
+                  fileName: req.file.filename,
+                  filePath: s3ObjectUrl,
+                  publicUrl: s3ObjectUrl,
+                  //deadline: deadline,             
+                  deadline: deadlineForSubmission,
+   
+    };
+  } else {
+    // File is not required, proceed without processing the certificate
+    staffMember.Medicalcertificate = {
+      originalName: null,
+      fileName: null,
+      filePath: null,
+      publicUrl: null,
+      deadline: deadlineForSubmission,
+      
+    };
+  }
+    
     if (
       Leavetype !== "Casualleaves" &&
       Leavetype !== "Medicalleaves" &&
-      Leavetype !== "Menstrualleaves"
+      Leavetype !== "Menstrualleaves" &&
+      Leavetype !== "Maternityleaves"&&
+      Leavetype !=="Sickleaves"&&
+      Leavetype !=="Marriageleaves"
     ) {
       return res.status(400).json({ message: "Invalid leave type." });
     }
@@ -151,6 +296,20 @@ router.post("/apply", async (req, res) => {
         message: "You can only request one day for Menstrual leave per month.",
       });
     }*/
+    const existingRequest = await Leave.findOne({
+        username,
+        Leavetype,
+        StartDate,
+      });
+  
+      if (existingRequest) {
+        return res.status(400).json({ message: "Duplicate leave request detected." });
+      }
+      let errorMessage = null;
+
+   const deadlineForMedicalCertificate = new Date();
+      deadlineForMedicalCertificate.setDate(deadlineForMedicalCertificate.getDate() + 14);
+  
 
     const staff = Leave({
       username,
@@ -159,23 +318,44 @@ router.post("/apply", async (req, res) => {
       StartDate,
       EndDate,
       Numberofdays,
+      Replacementworker,
       Reason,
       //menstrualLeaveRequests,
       Command,
       Status,
-    });
+      Medicalcertificate: {
+        originalName: req.file ? req.file.originalname : null,
+        fileName: req.file ? req.file.filename : null,
+        filePath: req.file ? req.file.path : null,
+        publicUrl: req.file ? s3ObjectUrl : null,
+      
+deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req.file
+    ? deadlineForSubmission
+    : null,
+      
+},
+    })
+
     console.log("staff:", staff);
 
     await staff.save();
     //staffMember[Leavetype] -= Numberofdays;
     console.log("staffMember after save:", staffMember);
-    // await staffMember.save();
-
+     await staffMember.save();
+ if (errorMessage) {
+        return res.json({
+            message: errorMessage
+                ? `Medical certificate is required for ${Leavetype}. You have one week to submit the certificate.`
+                : "New staff leaverequest",
+            leaveApplicationData: staff,
+        });
+    } else {
     return res.json({
       message: "New staff leaverequest",
       data: staff,
     });
-  } catch (error) {
+ }
+  /*} catch (error) {
     if (error.code === 11000) {
       return res
         .status(400)
@@ -186,7 +366,22 @@ router.post("/apply", async (req, res) => {
       error: error.message,
     });
   }
+});*/
+    } catch (error) {
+    console.error('Error during leave application:', error);
+if (error.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "Duplicate leave request detected." });
+    }
+    return res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
 });
+
+   
 
 const Leavecontroller = require("../Controller/Leavecontroller.js");
 router.route("/get_all").get(Leavecontroller.index);
