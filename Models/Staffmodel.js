@@ -43,17 +43,11 @@ const staffSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-   Role: {
-    type: String,
-    required: true,
-  },
   Casualleaves: {
     type: Number,
-    
   },
   Medicalleaves: {
-    type: Number,
-    
+    type: Number,   
   },
   Menstrualleaves: {
     type: Number,
