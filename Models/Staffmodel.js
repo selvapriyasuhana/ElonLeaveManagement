@@ -52,9 +52,17 @@ const staffSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  Maternityleaves:{type:Number},
+  Sickleaves:{
+    type:Number,
+  },
+  Marriageleaves:{
+    type:Number,
+  },
+ 
   usertype: {
     type: String,
-    enum: ["Admin", "Staff"],
+    enum: ["Admin", "Staff", "HR", "ReportingManager"],
     default: "Staff",
     required: true,
   },
