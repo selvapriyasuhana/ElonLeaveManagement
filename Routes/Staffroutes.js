@@ -126,6 +126,7 @@ router.post("/register", async (req, res) => {
       Age,
       Gender,
       DOB,
+      Maritalstatus,
       Contact,
       password,
       username,
@@ -134,7 +135,7 @@ router.post("/register", async (req, res) => {
       ORGName,
       Role,
     } = req.body;
-   // const admin = await Admin.findOne(); // Fetch the default leave values from the Admin model
+   
 const organization = await Organization.findOne({ ORGName });
 
     if (!organization) {
@@ -152,6 +153,19 @@ const organization = await Organization.findOne({ ORGName });
         message: "Contact should be a 10-digit number",
       });
     }
+    let userMaternityleaves = 15;
+    let userSickleaves = 15;
+    let userMarriageleaves = 15;
+    if (Maritalstatus === "Married") {
+        if (Gender === "Female") {
+          userMaternityleaves = 15; // Married women get 15 days
+        } else if (Gender === "Male") {
+          userMaternityleaves = 3; // Married men get 3 days
+        }
+      } else if (Maritalstatus === "Unmarried" && Gender === "Male") {
+        userMaternityleaves = 0; // Unmarried men get 0 days
+      }
+  
 
     const currentDate = new Date();
     const joiningDate = new Date(Dateofjoining);
@@ -192,6 +206,7 @@ const organization = await Organization.findOne({ ORGName });
       Age,
       Gender,
       DOB,
+      Maritalstatus,
       Contact,
       username,
       email,
@@ -199,6 +214,9 @@ const organization = await Organization.findOne({ ORGName });
       Casualleaves: userCasualleaves,
       Medicalleaves: userMedicalleaves,
       Menstrualleaves: userMenstrualleaves,
+      Maternityleaves:userMaternityleaves,
+      Sickleaves:userSickleaves,
+      MarriageLeaves:userMarriageleaves,
       ORGName,
       Role,
     });
