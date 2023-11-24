@@ -26,6 +26,10 @@ const leaveSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+   Replacementworker:{
+    type:String,
+    required:true,
+  },
   Reason: {
     type: String,
     required: false,
@@ -43,6 +47,29 @@ const leaveSchema = new mongoose.Schema({
     required: true,
     enum: ["pending", "accepted", "rejected"],
     default: "pending",
+  },
+  Medicalcertificate: {
+    originalName: {
+      type: String,
+      required: false,
+    },
+    fileName: {
+      type: String,
+      required:false,
+    },
+    filePath: {
+      type: String,
+      required: false,
+    },
+    publicUrl: {
+        type:String,
+        required:false,
+    }
+  },
+  deadline: {
+    type: Date,  // Assuming the deadline is a date
+    required: false,
+  
   },
 });
 /*leaveSchema.path("StartDate").validate(async function (StartDate) {
