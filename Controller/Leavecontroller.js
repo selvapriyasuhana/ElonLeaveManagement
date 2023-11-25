@@ -81,236 +81,7 @@ exports.look = async (req, res) => {
     });
   }
 };
-/*const mongoose = require("mongoose");
-const Staffmodel = require("../Models/Staffmodel.js");
-const Leavemodel = require("../Models/Leavemodel.js");
-exports.update = async (req, res) => {
-  try {
-    const { user_id } = req.params;
-    const { Command, Status, Leavetype, Numberofdays } = req.body;
 
-    // Update the leave request status and command
-    const updatedLeave = await Service.Service_update(user_id, {
-      Leavetype,
-      Command,
-      Status,
-    });
-
-    if (!updatedLeave) {
-      return res.json({
-        status: "Error",
-        message: "Leave request not found",
-      });
-    }
-
-    // If the leave request is approved, deduct the leaves from the user's record
-    if (Status === "accepted") {
-      const username = updatedLeave.username;
-      const existingStaff = await Staffmodel.findOne({ username });
-
-      if (!existingStaff) {
-        return res.json({
-          status: "Error",
-          message: "Staff record not found",
-        });
-      }
-
-      const user = await Staffmodel.findOne({
-        username: updatedLeave.username,
-      });
-
-      if (!user) {
-        return res.json({
-          status: "Error",
-          message: "User record not found",
-        });
-      }
-      console.log("Leavetype:", Leavetype);
-      console.log("Numberofdays:", Numberofdays);
-      console.log(
-        "Staff member's leave balances:",
-        user.Casualleaves,
-        user.Medicalleaves,
-        user.Menstrualleaves
-      );
-      // Determine which leave balance to update based on the leave type
-      /*if (Leavetype === "Casualleaves") {
-        user.Casualleaves -= Numberofdays;
-      } else if (Leavetype === "Medicalleaves") {
-        user.Medicalleaves -= Numberofdays;
-      } else {
-        return res.json({
-          status: "Error",
-          message: "Invalid leave type",
-        });
-      }*/
-
-      /*if (Leavetype === "Casualleave" || Leavetype === "Medicalleave") {
-        const leaveBalanceField = Leavetype.toLowerCase();
-        const remainingBalance = user[leaveBalanceField] - Numberofdays;
-
-        if (remainingBalance < 0) {
-          // Set the leave request to "rejected" if the balance goes negative
-          updatedLeave.Status = "rejected";
-          await updatedLeave.save();
-
-          return res.json({
-            status: "Error",
-            message: `Insufficient ${Leavetype} balance`,
-          });
-        }
-
-        user[leaveBalanceField] = remainingBalance;
-        await user.save();
-      } else {
-        return res.json({
-          status: "Error",
-          message: "Invalid leave type",
-        });
-      }*/
-
-      /*   if (Leavetype === "Casualleave") {
-        user.Casualleave -= Numberofdays;
-
-        if (user.Casualleave < 0) {
-          return res.json({
-            status: "Error",
-            message: "Casual Leave balance is insufficient",
-          });
-        }
-      } else if (Leavetype === "Medicalleave") {
-        user.Medicalleave -= Numberofdays;
-
-        if (user.Medicalleave < 0) {
-          return res.json({
-            status: "Error",
-            message: "Medical Leave balance is insufficient",
-          });
-        }
-      } else if (Leavetype === "Menstrualleave") {
-        user.Menstrualleave -= Numberofdays;
-
-        if (user.Menstrualleave < 0) {
-          return res.json({
-            status: "Error",
-            message: "Menstrualleave balance is insufficient",
-          });
-        }
-      } else {
-        return res.json({
-          status: "Error",
-          message: "Invalid leave type",
-        });
-      }*/
-      /*if (user.Casualleave <= 0 && user.Medicalleave <= 0) {
-        updatedLeave.Status = "rejected";
-        await updatedLeave.save();
-      }
-      // Check if both casual leave and medical leave reached 0
-      if (user.Casualleave <= 0 || user.Medicalleave <= 0) {
-        return res.json({
-          status: "Error",
-          message: "Leave balance reached 0",
-        });
-      }*/
-
-      // Save the updated user record in the "users" collection
-    /*  if (Leavetype === "Menstrualleaves" && user.Gender !== "Female") {
-        return res.json({
-          status: "Error",
-          message: "Menstrual leave is only applicable for women",
-        });
-      }
-
-      // Deduct the appropriate leave balance based on the leave type
-      if (Leavetype === "Casualleaves") {
-        user.Casualleaves -= Numberofdays;
-      } else if (Leavetype === "Medicalleaves") {
-        user.Medicalleaves -= Numberofdays;
-      } else if (Leavetype === "Menstrualleaves") {
-        user.Menstrualleaves -= Numberofdays;
-      } else {
-        return res.json({
-          status: "Error",
-          message: "Invalid leave type",
-        });
-      }
-
-      if (
-        user.Casualleaves < 0 ||
-        user.Medicalleaves < 0 ||
-        user.Menstrualleaves < 0
-      ) {
-        return res.json({
-          status: "Error",
-          message: "Insufficient leave balance",
-        });
-      }
-
-      await user.save();
-    }
-    /*if (Leavetype === "Casualleave") {
-        user.Casualleave -= Numberofdays;
-        if (user.Casualleave < 0) {
-          return res.json({
-            status: "Error",
-            message: "Insufficient casual leave",
-          });
-        }
-      } else if (Leavetype === "Medicalleave") {
-        user.Medicalleave -= Numberofdays;
-        if (user.Medicalleave < 0) {
-          return res.json({
-            status: "Error",
-            message: "Insufficient medical leave",
-          });
-        }
-      } else {
-        return res.json({
-          status: "Error",
-          message: "Invalid leave type",
-        });
-      }
-
-      // Check if either casual leave or medical leave reached 0
-      if (user.Casualleave <= 0 || user.Medicalleave <= 0) {
-        return res.json({
-          status: "Error",
-          message: "Leave balance reached 0",
-        });
-      }
-
-      // Save the updated user record in the "users" collection
-      await user.save();
-
-      // Update the leave request status only if leave balance is not 0
-      updatedLeave.Status = "accepted";
-      await updatedLeave.save();
-    }*/
-
-    // Update the leave record in the "leaves" collection using Mongoose
-  /*  const leave = await Leavemodel.findByIdAndUpdate(
-      user_id,
-      {
-        Command,
-        Status,
-      },
-      { new: true }
-    );
-
-    res.json({
-      status: "Success",
-      message: "Leave request updated successfully",
-      data: leave,
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      status: "Error",
-      message: "An error occurred while processing the request",
-    });
-  }
-};*/
 
 // const mongoose = require("mongoose");
 const Staffmodel = require("../Models/Staffmodel.js");
@@ -384,6 +155,12 @@ exports.update = async (req, res) => {
         user.Medicalleaves -= Numberofdays;
       } else if (Leavetype === "Menstrualleaves") {
         user.Menstrualleaves -= Numberofdays;
+        } else if(Leavetype ==="Maternityleaves"){
+       user.Maternityleaves  -= Numberofdays;
+      } else if(Leavetype ==="Sickleaves"){
+        user.Sickleaves  -=  Numberofdays;
+       }else if(Leavetype ==="Marriageleaves"){
+        user.Marriageleaves  -= Numberofdays;
       } else {
         return res.json({
           status: "Error",
@@ -394,7 +171,11 @@ exports.update = async (req, res) => {
       if (
         user.Casualleaves < 0 ||
         user.Medicalleaves < 0 ||
-        user.Menstrualleaves < 0
+        user.Menstrualleaves < 0 ||
+        user.Maternityleaves < 0 ||
+        user.Sickleaves < 0 ||
+        user.Marriageleaves < 0
+
       ) {
         return res.json({
           status: "Error",
