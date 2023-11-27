@@ -6,8 +6,11 @@ const cryptr = new Cryptr("priya");
 const nodemailer = require("nodemailer");
 const { generateRandomToken } = require("../utils/utils.js");
 const verifyToken = require("../middleware/middle.js");
-const emailservice = require("../Service/emailservice.js");
+//const emailservice = require("../Service/emailservice.js");
 const { sendEmail } = require("../Service/emailservice.js");
+const randomstring = require("randomstring");
+const otpGenerator = require("otp-generator");
+
 
 
 router.get("/Staff", (req, res) => {
@@ -55,7 +58,7 @@ router.post("/signin", async (req, res) => {
     });
   }
 });
-router.post("/forgotpassword", async (req, res) => {
+/*router.post("/forgotpassword", async (req, res) => {
   try {
     const { email } = req.body;
     try {
@@ -102,9 +105,7 @@ router.post("/resetpassword", async (req, res) => {
       user.resetToken = null;
       await user.save();
 
-      /*user.password = newpassword;
-      user.resetToken = null;
-      await user.save();*/
+      
 
       res.status(200).send("Password reset successful");
     } catch (error) {
@@ -115,18 +116,148 @@ router.post("/resetpassword", async (req, res) => {
     console.error("Outer error during password reset:", error);
     res.status(500).send("Error in processing request");
   }
-});
+});*/
+const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "priyaecs95@gmail.com",
+      pass: "ykbhggznozmodutz",
+    },
+  });
+function generateOTP() {
+    const chars = "0123456789";
+    const len = chars.length;
+    let Otp = "";
+    for (let i = 0; i < 6; i++) {
+      Otp += chars[Math.floor(Math.random() * len)];
+  }
+    return Otp;
+  }
+  
+  async function sendOTP(email, Otp) {
+    const mailOptions = {
+      from: "priyaecs95@gmail.com",
+      to: email,
+      subject: "Your OTP Code",
+      text: `Your OTP code is: ${Otp}`,
+    };
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("OTP sent successfully");
+    } catch (err) {
+      console.error(err);
+      throw new Error("Failed to send OTP");
+    }
+  }
+router.post("/forgotpassword", async (req, res) => {
+    try {
+      const { email } = req.body;
+  
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      } else {
+        const Otp = generateOTP();
+        const user = await User.findOneAndUpdate(
+          { email },
+          { $set: { Otp } },
+          { new: true }
+        );
+        user.Otp = Otp;
+        await user.save();
+        await sendOTP(email, Otp);
+        res.status(200).json({ message: "OTP sent successfully" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to send OTP" });
+    }
+  });
+  
+  router.post("/verify", async (req, res) => {
+    const { email, Otp } = req.body;
+  
+    if ( !email || !Otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
+    }
+  
+    try {
+      const user = await User.findOne({ email });
+  
+      if (user && user.Otp === Otp) {
+        user.Otp = null;
+        await user.save();
+        res.json({ success: true, message: "OTP is valid" });
+      } else {
+        res.status(401).json({ error: "Invalid OTP" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err });
+    }
+  });
+  
+  router.post("/resetpassword", async (req, res) => {
+    const { username, newpassword } = req.body;
+  
+    try {
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      if (!newpassword) {
+        return res.status(400).json({
+          message: "New password is empty",
+        });
+      }
+      const encryptedNewPassword = cryptr.encrypt(newpassword);
+      user.password = encryptedNewPassword;
+      await user.save();
+  
+      return res.status(200).json({
+        message: "Password reset successful",
+        data: user,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+
+ 
 
 
 router.post("/register", async (req, res) => {
   try {
     const {
+      Empid,
       Dateofjoining,
       Name,
       Age,
       Gender,
       DOB,
       Maritalstatus,
+      Address,
+      Pincode,
+      City,
+      State,
+      BankName,
+      Ifsc,
+      AccountNo,
+      Salary,
+      Branch,
+      Otp,
+      BloodGroup,
+      created_at,
       Contact,
       password,
       username,
@@ -201,12 +332,25 @@ const organization = await Organization.findOne({ ORGName });
 
     const user = new User({
       password: encryptedPassword,
+      Empid,
       Dateofjoining,
       Name,
       Age,
       Gender,
       DOB,
       Maritalstatus,
+       Address,
+      Pincode,
+      City,
+      State,
+      BankName,
+      Ifsc,
+      AccountNo,
+      Salary,
+      Branch,
+      Otp,
+      BloodGroup,
+      created_at,
       Contact,
       username,
       email,
