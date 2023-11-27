@@ -48,7 +48,7 @@ BankName: {
 },
 Ifsc: {
     required: true,
-    type: Number
+    type: String
 },
 AccountNo: {
     required: true,
