@@ -2,6 +2,10 @@
 const mongoose = require("mongoose");
 
 const staffSchema = new mongoose.Schema({
+  Empid: {
+        required: false,
+        type: String
+    },
   Dateofjoining: {
     type: Date,
   },
@@ -22,6 +26,60 @@ const staffSchema = new mongoose.Schema({
   Maritalstatus:{
     type:String,
   },
+  Address: {
+    required: false,
+    type: String
+},
+Pincode: {
+    required: true,
+    type: Number
+},
+City: {
+    required: true,
+    type: String
+},
+State: {
+    required: true,
+    type: String
+},
+BankName: {
+    required: true,
+    type: String
+},
+Ifsc: {
+    required: true,
+    type: Number
+},
+AccountNo: {
+    required: true,
+    type: Number
+},
+Salary: {
+    required: true,
+    type: Number
+},
+Branch :{
+    required : true,
+    type : String
+},
+Otp: {
+    required: false,
+    type: Number
+},
+newpassword : {
+    required : false,
+    type : String
+},
+BloodGroup : {
+    required : true,
+    type : String
+},
+
+created_at: {
+    type: Date,
+    default: Date.now
+},
+
   Contact: {
     required: false,
     type: Number,
@@ -76,8 +134,8 @@ const staffSchema = new mongoose.Schema({
     required: true,
   },
 
-  resetToken: String,
-  resetTokenExpiration: Date,
+  //resetToken: String,
+  //resetTokenExpiration: Date,
 });
 
 const Staffdetails = mongoose.model("Staffdetails", staffSchema);
