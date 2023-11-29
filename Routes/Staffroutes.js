@@ -284,6 +284,7 @@ const organization = await Organization.findOne({ ORGName });
         message: "Contact should be a 10-digit number",
       });
     }
+    let userEmergencyleaves = 7;
     let userMaternityleaves = 15;
     let userSickleaves = 15;
     let userMarriageleaves = 15;
@@ -313,6 +314,8 @@ const organization = await Organization.findOne({ ORGName });
     // Ensure that userCasualleave and userMedicalleave are not negative
     userCasualleaves = Math.max(userCasualleaves, 0);
     userMedicalleaves = Math.max(userMedicalleaves, 0);
+    userMaternityleaves = Math.max(userMaternityleaves, 0);
+    userEmergencyleaves = Math.max(userEmergencyleaves, 0);
     console.log("User Casual Leave (after max): ", userCasualleaves);
     console.log("User Medical Leave (after max): ", userMedicalleaves);
 
@@ -361,6 +364,7 @@ const organization = await Organization.findOne({ ORGName });
       Maternityleaves:userMaternityleaves,
       Sickleaves:userSickleaves,
       MarriageLeaves:userMarriageleaves,
+      Emergencyleaves:userEmergencyleaves,
       ORGName,
       Role,
     });
