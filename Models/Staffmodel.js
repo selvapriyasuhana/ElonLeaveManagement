@@ -118,7 +118,9 @@ created_at: {
   Marriageleaves:{
     type:Number,
   },
- 
+  Emergencyleaves:{
+    type:Number,
+  },
   usertype: {
     type: String,
     enum: ["Admin", "Staff", "HR", "ReportingManager"],
