@@ -45,10 +45,7 @@ const leaveSchema = new mongoose.Schema({
     enum: ["pending", "accepted", "rejected"],
     default: "pending",
   },
-  NeededDocuments:{
-    type:String,
-    required:false,
-  },
+ 
   Medicalcertificate: {
     originalName: {
       type: String,
