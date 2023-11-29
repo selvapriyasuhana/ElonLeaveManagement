@@ -346,10 +346,11 @@ router.post("/apply",  async (req, res) => {
       EndDate,
       Numberofdays,
       Replacementworker,
-      NeededDocuments,
+  
       Reason,
       Command,
       Status,
+       base64File,
     } = req.body;
     console.log('Numberofdays:', Numberofdays); // Add this line
 
@@ -539,7 +540,7 @@ if (!currentLeave) {
     return res.status(404).json({ message: 'Leave record not found' });
 }*/
 
-let DocumentsDeadline=null;
+/*let DocumentsDeadline=null;
 let base64File = null;
 
 if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && NeededDocuments !== "base64") {
@@ -554,7 +555,34 @@ if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && NeededDocuments !== "
           }
       }else if(NeededDocuments === " No"){
         DocumentsDeadline   = null
-      }
+        }
+      }*/
+    let DocumentsDeadline = null;
+
+if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
+    if (!base64File) {
+      return res.status(400).json({
+        message: 'Base64 document is required for emergency leave.',
+      });
+    }
+
+    // Save the Base64 document to the database or perform other operations
+    const base64Result = await saveBase64Document(username, Leavetype, base64File);
+
+    if (base64Result.success) {
+      return res.json({
+        message: 'Base64 document applied successfully for emergency leave.',
+        leave: base64Result.updatedLeave,
+      });
+    } else {
+      return res.status(500).json({
+        message: 'An error occurred during base64 document processing.',
+        error: base64Result.error,
+      });
+    }
+  }
+
+
       
     // Update the leave document with the needed documents and deadline
   /* const updatedLeave = await Leave.findOneAndUpdate(
@@ -573,7 +601,7 @@ if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && NeededDocuments !== "
         deadline: documentsDeadline,
         leave: updatedLeave,
     });*/
-}
+
 
     /*if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && !NeededDocuments) {
         // Set a deadline for submitting needed documents
@@ -708,6 +736,7 @@ if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && NeededDocuments !== "
       Status,
       NeededDocuments,
       DocumentsDeadline,
+      base64File,
      /* Medicalcertificate: {
        /*originalName: req.file.originalname,
         fileName: req.file.filename,
@@ -735,21 +764,9 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
     //staffMember[Leavetype] -= Numberofdays;
     console.log("staffMember after save:", staffMember);
      await staffMember.save();
-     const responseData = {
-        ...staff._doc,
-        ...(Leavetype !== "Emergencyleaves" && staffMember.Medicalcertificate &&
-        (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves")
-        ? { Medicalcertificate: staffMember.Medicalcertificate }
-        : {}),
-        
-      };
-    
-     if (Leavetype === "Emergencyleaves") {
-        responseData.base64File = base64File;
-      }
      return res.status(200).json({
         message: 'Leave request successfully submitted.',
-        data: responseData,
+        data: staff,
       });
     } catch (error) {
         console.error('Error during leave application:', error);
@@ -759,8 +776,8 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
             const updatedLeave = await Leave.findOneAndUpdate(
                 { username, Leavetype },
                 {
-                    NeededDocuments: "No",
-                    DocumentsDeadline: documentsDeadline,
+                    Numberofdays:1,
+                    DocumentsDeadline:null,
                 },
                 { new: true }
             );
@@ -778,8 +795,8 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
                 const updatedLeave = await Leave.findOneAndUpdate(
                     { username, Leavetype },
                     {
-                        NeededDocuments: "Yes",
-                        DocumentsDeadline: documentsDeadline,
+                        DocumentsDeadline: Numberofdays > 1 && !base64File ? documentsDeadline : null,
+                       // DocumentsDeadline: documentsDeadline,
                     },
                     { new: true }
                 );
