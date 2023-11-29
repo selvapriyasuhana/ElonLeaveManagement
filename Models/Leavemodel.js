@@ -148,8 +148,8 @@ const leaveSchema = new mongoose.Schema({
     type: Date,  // Assuming the deadline is a date
     required: false,
   
-  }*/,
-});
+  },
+});*/
 
 const Leave = mongoose.model("Leave", leaveSchema);
 
