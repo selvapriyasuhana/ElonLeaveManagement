@@ -346,7 +346,6 @@ router.post("/apply",  async (req, res) => {
       EndDate,
       Numberofdays,
       Replacementworker,
-  
       Reason,
       Command,
       Status,
@@ -734,7 +733,6 @@ if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
       Replacementworker,
       Command,
       Status,
-      NeededDocuments,
       DocumentsDeadline,
       base64File,
      /* Medicalcertificate: {
