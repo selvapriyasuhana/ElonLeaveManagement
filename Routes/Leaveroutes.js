@@ -303,8 +303,6 @@ function readAndConvertToBase64(filePath) {
   
 
 const s3 = new AWS.S3({
-   // accessKeyId: 'AKIAXWEQD3QL5XLL5HPK ',
-    //secretAccessKey: '/Maa7zb4kxfOq0XmoOfb6vaogM0HX0BEYS0g+Duu',
     region: 'US East (N. Virginia)', // Update with your region
    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
