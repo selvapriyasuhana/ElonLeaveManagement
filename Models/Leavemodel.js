@@ -76,10 +76,10 @@ const leaveSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  base64File: {
+ /* base64File: {
     type: String,
     
-    },
+    },*/
   
 });
 
