@@ -827,7 +827,7 @@ const Leavecontroller = require("../Controller/Leavecontroller.js");
 router.route("/get_all").get(Leavecontroller.index);
 router.route("/status/:Status").get(Leavecontroller.saw);
 router.route("/username/:username").get(Leavecontroller.look);
-router.route("/user/id/:user_id").get(Leavecontroller.view);
+router.route("/id/:user_id").get(Leavecontroller.view);
 router.route("/reply/:user_id").put(Leavecontroller.update);
 router.route("/:user_id").patch(Leavecontroller.update);
 router.route("/:user_id").delete(Leavecontroller.Delete);
