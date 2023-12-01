@@ -1,4 +1,4 @@
-Service = require('../service/assetservice.js');
+Service = require('../Service/assetservice.js');
 
 exports.index = function(err,user)
 {
