@@ -42,7 +42,7 @@ router.post("/assetrequired", async (req, res) => {
 }
 });
 
-var assetcontroller = require("../controller/assetcontroller.js");
+var assetcontroller = require("../Controller/assetcontroller.js");
 router.route("/assetreq/getall").get(assetcontroller.index);
 
 router
