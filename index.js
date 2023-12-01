@@ -13,6 +13,11 @@ const upload = multer({ storage: storage });
 var StaffRoutes = require("./Routes/Staffroutes.js");
 var LeaveRoutes = require("./Routes/Leaveroutes.js");
 var OrgRoutes = require("./Routes/Orgroutes.js");
+var AttendanceRoutes=require("./Routes/Attendanceroutes.js");
+const apiRoutes = require('./Routes/routes.js');
+const assignRoutes = require('./Routes/assignroutes.js');
+const asset = require('./Routes/assetroutes.js');
+const issue = require('./Routes/issueroutes.js');
 var mongodb = require("./Config.js/Mongoconfig.js");
 
 app.use(cors());
@@ -44,4 +49,10 @@ app.get("/", (req, res) => res.send("Welcome to leave management system"));
 app.use("/organization", OrgRoutes);
 app.use("/staff", StaffRoutes);
 app.use("/staff/leave", LeaveRoutes);
+app.use("/att",AttendanceRoutes);
+app.use('/api', apiRoutes);
+app.use('/api',assignRoutes);
+app.use('/api',asset);
+app.use('/api',issue);
+
 module.exports = app;
