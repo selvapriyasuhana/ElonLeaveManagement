@@ -84,7 +84,7 @@ exports.look = async (req, res) => {
 
 
 // const mongoose = require("mongoose");
-/*const Staffmodel = require("../Models/Staffmodel.js");
+const Staffmodel = require("../Models/Staffmodel.js");
 const Leavemodel = require("../Models/Leavemodel.js");
 
 exports.update = async (req, res) => {
@@ -266,8 +266,8 @@ exports.update = async (req, res) => {
   catch (error) {
     return error;
   }
-};*/
-const Staffmodel = require("../Models/Staffmodel.js");
+};
+/*const Staffmodel = require("../Models/Staffmodel.js");
 const Leavemodel = require("../Models/Leavemodel.js");
 // Leavecontroller.js
 
@@ -425,13 +425,7 @@ exports.update = async (req, res) => {
       }
     
     if (Status === "rejected") {
-      // Update the leave request status to "rejected" in the database
-      /*const leaveUpdate = await Leavemodel.findByIdAndUpdate(user_id, {
-        Command,
-        Status: "rejected",
-        
-      });
-       { new: true }).lean();*/
+      
       const leave = await Leavemodel.findByIdAndUpdate(
         user_id,
         { Command, Status: "rejected" },
@@ -502,7 +496,7 @@ exports.update = async (req, res) => {
     message: "An error occurred while processing the leave request",
   });
 }
-};
+};*/
 
 
 
