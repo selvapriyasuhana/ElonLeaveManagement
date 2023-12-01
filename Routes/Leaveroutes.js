@@ -8,7 +8,7 @@ const AWS = require('aws-sdk');
 const mime = require('mime-types');
 require('dotenv').config();
 
-/*const s3 = new AWS.S3({
+const s3 = new AWS.S3({
   //  region: 'US East (N. Virginia)', // Update with your region
     region:'us-east-1',
    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -288,8 +288,8 @@ if (error.code === 11000) {
       error: error.message,
     });
   }
-});*/
-function readAndConvertToBase64(filePath) {
+});
+/*function readAndConvertToBase64(filePath) {
     try {
       // Read the file content synchronously
       const fileContent = fs.readFileSync(filePath, { encoding: 'base64' });
@@ -356,33 +356,7 @@ router.post("/apply",  async (req, res) => {
     if (!staffMember) {
       return res.status(404).json({ message: "Staff member not found." });
     }
-/*if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
-        if (!base64File) {
-          return res.status(400).json({
-            message: 'Base64 document is required for emergency leave.',
-          });
-        }
-  
-        const base64Result = await Leavecontroller.uploadBase64Document(username, Leavetype, base64File);
-  
-        if (base64Result.success) {
-          return res.json({
-            message: 'Base64 document applied successfully for emergency leave.',
-            leave: base64Result.updatedLeave,
-          });
-        } else {
-          return res.status(500).json({
-            message: 'An error occurred during base64 document processing.',
-            error: base64Result.error,
-          });
-        }
-      }
-  
-    } catch (error) {
-      console.error('Error during leave application:', error);
-      // Handle other errors...
-    }
-  });*/
+
   
      
       if (Leavetype === "Marriageleaves" && staffMember.Maritalstatus !== "Unmarried") {
@@ -418,9 +392,7 @@ router.post("/apply",  async (req, res) => {
                 }
               }
           
-          /*if ((Leavetype === "Maternityleaves" || Leavetype === "Marriageleaves") && !req.file) {
-                return res.status(400).json({ message: `certificate is required for ${Leavetype}.` });
-              }*/
+          
               
   
     let s3ObjectUrl;
@@ -436,19 +408,7 @@ router.post("/apply",  async (req, res) => {
             });
           }
 
- /* if (Leavetype === "Sickleaves") {
-    console.log('Sick leave condition met');
-    console.log('Number of days:', Numberofdays);
-  
-    if (Numberofdays > 1) {
-      console.log('Condition met: Certificate not required initially');
-      // Store the leave application without a certificate for now
-    } else {
-      console.log('Condition met: Certificate not required or provided');
-    }
-  } else {
-    console.log('Sick leave condition not met');
-  }*/
+
 
                console.log("Processing certificate");
                 const fileContent = fs.readFileSync(req.file.path);
@@ -530,30 +490,7 @@ router.post("/apply",  async (req, res) => {
       return res.status(400).json({ message: "Invalid leave type." });
     }
     // Find the leave document before the update
-/*const currentLeave = await Leave.findOne({ username, Leavetype });
-console.log('Leave details before update:', currentLeave);
 
-if (!currentLeave) {
-    return res.status(404).json({ message: 'Leave record not found' });
-}*/
-
-/*let DocumentsDeadline=null;
-let base64File = null;
-
-if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && NeededDocuments !== "base64") {
-    // Set a deadline for submitting needed documents
-    //const documentsDeadline = new Date(new Date(StartDate).getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days deadline
-    if (NeededDocuments === "Yes") {
-        // Your logic to set the deadline value, e.g., based on the start date
-        DocumentsDeadline = new Date(new Date(StartDate).getTime() + 7 * 24 * 60 * 60 * 1000);
-        if (req.file) {
-            const filePath = req.file.path;
-            base64File = readAndConvertToBase64(filePath);
-          }
-      }else if(NeededDocuments === " No"){
-        DocumentsDeadline   = null
-        }
-      }*/
     let DocumentsDeadline = null;
 
 if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
@@ -580,47 +517,6 @@ if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
   }
 
 
-      
-    // Update the leave document with the needed documents and deadline
-  /* const updatedLeave = await Leave.findOneAndUpdate(
-        { username, Leavetype },
-        {
-            NeededDocuments: "Yes", // Set to "Yes" to indicate documents are needed
-            DocumentsDeadline: documentsDeadline,
-        },
-        { new: true }
-    );
-
-    console.log('Leave details after update:', updatedLeave);
-
-    return res.json({
-        message: 'Documents are required for leave. Please submit the documents before the deadline.',
-        deadline: documentsDeadline,
-        leave: updatedLeave,
-    });*/
-
-
-    /*if (Numberofdays > 1 && Leavetype === "Emergencyleaves" && !NeededDocuments) {
-        // Set a deadline for submitting needed documents
-        const documentsDeadline = new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days deadline
-
-        // Update the leave document with the needed documents and deadline
-        const updatedLeave = await Leave.findOneAndUpdate(
-            { username, Leavetype },
-            {
-                NeededDocuments: "Yes", // Set to "Yes" to indicate documents are needed
-                DocumentsDeadline: documentsDeadline,
-            },
-            { new: true }
-        );
-
-        return res.json({
-            message: 'Documents are required for leave. Please submit the documents before the deadline.',
-            deadline: documentsDeadline,
-            leave: updatedLeave,
-        });
-    }*/
-
     if (Leavetype === "Casualleaves") {
       // Check if a Casualleaves request was made in the last month
       const lastMonthCasualLeave = await Leave.findOne({
@@ -641,10 +537,7 @@ if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
         });
       }
     }
-    /*if (Numberofdays !== 1) {
-        return res.status(400).json({ message: "Casualleaves can only be requested for a single day." });
-      }
-    }*/
+   
 
     if (Leavetype === "Casualleaves") {
       // Get the current date
@@ -697,11 +590,7 @@ if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
         });
       }
     }
-    /*if (Numberofdays > 1) {
-      return res.status(400).json({
-        message: "You can only request one day for Menstrual leave per month.",
-      });
-    }*/
+    
     const existingRequest = await Leave.findOne({
         username,
         Leavetype,
@@ -733,7 +622,7 @@ if (Leavetype === "Emergencyleaves" && Numberofdays > 1) {
       Status,
       DocumentsDeadline,
       base64File,
-     /* Medicalcertificate: {
+      Medicalcertificate: {
        /*originalName: req.file.originalname,
         fileName: req.file.filename,
         filePath: req.file.path,
@@ -748,7 +637,7 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
     ? deadlineForSubmission
     : null,
       
-},*/
+},
     })
 
     console.log("staff:", staff);
@@ -819,7 +708,7 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
             });
         }
     }
-});
+});*/
  
    
 
