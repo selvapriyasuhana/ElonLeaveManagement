@@ -34,6 +34,7 @@ exports.see = async (req, res) => {
       Casualleaves: staffMember.Casualleaves,
       Medicalleaves: staffMember.Medicalleaves,
       Menstrualleaves: staffMember.Menstrualleaves,
+      Sickleaves:staffMember.Sickleaves,
     };
 
     return res.json({
@@ -47,6 +48,35 @@ exports.see = async (req, res) => {
     });
   }
 };
+exports.getAllBalanceLeaves = async (req, res) => {
+    try {
+      // Find all staff members
+      const allStaffMembers = await Staffdetails.find();
+  
+      if (!allStaffMembers || allStaffMembers.length === 0) {
+        return res.status(404).json({ message: "No staff members found." });
+      }
+  
+      // Extract and compile balance leaves information for all staff members
+      const allBalanceLeaves = allStaffMembers.map((staffMember) => ({
+        username: staffMember.username,
+        Casualleaves: staffMember.Casualleaves,
+        Medicalleaves: staffMember.Medicalleaves,
+        Menstrualleaves: staffMember.Menstrualleaves,
+        Sickleaves:staffMember.Sickleaves,
+      }));
+  
+      return res.json({
+        message: "All balance leaves retrieved successfully",
+        data: allBalanceLeaves,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  };
 
 exports.view = async (req, res) => {
   try {
