@@ -10,6 +10,10 @@ const verifyToken = require("../middleware/middle.js");
 const { sendEmail } = require("../Service/emailservice.js");
 const randomstring = require("randomstring");
 const otpGenerator = require("otp-generator");
+const moment = require('moment');
+const WorkingHours = require("../Models/WorkingHoursModel");
+const Staffdetails = require("../Models/Staffmodel.js");
+
 
 
 
@@ -232,6 +236,101 @@ router.post("/forgotpassword", async (req, res) => {
       });
     }
   });
+function formatTimeDifference(timeDifference) {
+    const hours = Math.floor(timeDifference / 3600);
+    const minutes = Math.floor((timeDifference % 3600) / 60);
+    const seconds = Math.floor(timeDifference % 60);
+    return `${hours}hours ${minutes}minutes ${seconds}seconds`;
+}
+router.post("/checkin", async (req, res) => {
+    try {
+      const { username } = req.body;
+  
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      const checkinTime = new Date();
+  
+      const workingHoursEntry = new WorkingHours({
+        staff: user._id,
+        checkinTime,
+        checkoutTime: null,
+        workingHours: 0,
+      });
+  
+      await workingHoursEntry.save();
+  
+      res.json({
+        message: "Check-in successful",
+        checkinTime,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+  
+  router.post("/checkout", async (req, res) => {
+    try {
+      const { username } = req.body;
+      
+
+  
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      const checkoutTime = new Date();
+  
+      const workingHoursEntry = await WorkingHours.findOne({
+        staff: user._id,
+        checkoutTime: null,
+       // date: { $gte: new Date(new Date().setHours(00, 00, 00)), $lt: new Date(new Date().setHours(23, 59, 59)) },
+       date: { $gte: new Date(new Date().setHours(0, 0, 0)), $lt: new Date(new Date().setHours(23, 59, 59)) },
+
+
+    });
+  
+      if (workingHoursEntry) {
+        workingHoursEntry.checkoutTime = checkoutTime;
+      
+      const timeDifferenceInSeconds = (checkoutTime - workingHoursEntry.checkinTime) / 1000;
+      workingHoursEntry.workingHours = formatTimeDifference(timeDifferenceInSeconds);
+     
+      await workingHoursEntry.save();
+  
+        res.json({
+          message: "Check-out successful",
+          checkinTime: workingHoursEntry.checkinTime,
+          checkoutTime,
+          workingHours: workingHoursEntry.workingHours,
+        });
+      } else {
+        res.status(400).json({
+          message: "User has not checked in. Please check in first.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+  
 
  
 
