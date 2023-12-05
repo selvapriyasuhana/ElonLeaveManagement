@@ -266,6 +266,9 @@ email: {
     type: String,
     required: true,
   },
+   checkinTime: { type: Date },
+checkoutTime: { type: Date },
+workingHours: { type: Number, default: 0 },
  // resetToken: String,
   //resetTokenExpiration: Date,
 });
