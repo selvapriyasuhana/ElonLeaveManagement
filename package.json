@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "mime": "^3.0.0",
     "mongoose": "^7.6.5",
+    "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
