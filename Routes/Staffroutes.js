@@ -539,7 +539,7 @@ function addTime(time1, time2) {
     return result;
 }
 
-  router.get("/workinghours/:username/perday", async (req, res) => {
+  router.get("/workinghoursperday/:username", async (req, res) => {
     try {
             
       const { username } = req.params;
