@@ -14,9 +14,6 @@ const moment = require('moment');
 const WorkingHours = require("../Models/WorkingHoursModel");
 const Staffdetails = require("../Models/Staffmodel.js");
 
-
-
-
 router.get("/Staff", (req, res) => {
   res.json({
     status: "API Works",
@@ -33,16 +30,12 @@ router.post("/signin", async (req, res) => {
         message: "Organization not found. Staff sign-in denied.",
       });
     }
-
-
     const user = await User.findOne({ username });
-
     if (!user) {
       return res.status(404).json({
         message: "user not found",
       });
     }
-
     const decryptedPassword = cryptr.decrypt(user.password);
 
     if (decryptedPassword === password) {
@@ -448,7 +441,7 @@ function formatTimeDifference(timeDifference) {
     }
   });
   // Add a new route to get all check-in/check-out entries for all staff
-router.get("/workingHours/all", async (req, res) => {
+router.get("/workinghours/all", async (req, res) => {
     try {
       const allWorkingHours = await WorkingHours.find().sort({ checkinTime: 'desc' });
   
@@ -482,7 +475,7 @@ router.get("/workingHours/all", async (req, res) => {
     }
   });
   // Add a new route to get check-in/check-out entries for a specific staff by username
-router.get("/workingHours/:username", async (req, res) => {
+router.get("/workinghours/:username", async (req, res) => {
     try {
       const { username } = req.params;
   
@@ -546,7 +539,7 @@ function addTime(time1, time2) {
     return result;
 }
 
-  router.get("/workingHours/:username/perDay", async (req, res) => {
+  router.get("/workinghours/:username/perday", async (req, res) => {
     try {
         const { username } = req.params;
         const user = await User.findOne({ username });
