@@ -585,7 +585,7 @@ function addTime(time1, time2) {
             }
 
             dailyWorkingHoursMap.get(date).workingHours = addTime(dailyWorkingHoursMap.get(date).workingHours, formattedWorkingHours);
-        });
+        
         } else {
         console.error(`Invalid format for working hours: ${entry.workingHours}`);
 
