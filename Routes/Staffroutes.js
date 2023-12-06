@@ -505,7 +505,7 @@ router.get("/workinghours/:username", async (req, res) => {
     
       res.json({
         status: "Success",
-        message: "Retrieved all staff workinghours successfully",
+        message: "Retrieved given username staff workinghours details successfully",
         data: formattedWorkingHours,
       });
     } catch (error) {
