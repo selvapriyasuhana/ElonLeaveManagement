@@ -586,6 +586,28 @@ function addTime(time1, time2) {
 
             dailyWorkingHoursMap.get(date).workingHours = addTime(dailyWorkingHoursMap.get(date).workingHours, formattedWorkingHours);
         });
+        } else {
+        console.error(`Invalid format for working hours: ${entry.workingHours}`);
+
+        // Set a default value for working hours
+        const defaultWorkingHours = "0hours 0minutes 0seconds";
+
+        if (!dailyWorkingHoursMap.has(date)) {
+            dailyWorkingHoursMap.set(date, {
+                username,
+                date,
+                workingHours: defaultWorkingHours
+            });
+        } else {
+            // If the date is already in the map, you might want to update the existing entry
+            const existingEntry = dailyWorkingHoursMap.get(date);
+            existingEntry.workingHours = addTime(existingEntry.workingHours, defaultWorkingHours);
+        }
+
+        // Alternatively, you can skip the entry entirely by not performing any further actions
+    }
+});
+
       
 
         const formattedDailyWorkingHours = Array.from(dailyWorkingHoursMap.values());
@@ -595,11 +617,7 @@ function addTime(time1, time2) {
             message: `Retrieved per day overall working hours for ${username} successfully`,
             data: formattedDailyWorkingHours,
         });
-       } else {
-        console.error(`Invalid format for working hours: ${entry.workingHours}`);
-        // You might want to handle this case, e.g., set a default value or skip the entry
-    }
-});
+       
     } catch (error) {
         console.error(error);
         res.status(500).json({
