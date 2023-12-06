@@ -236,7 +236,7 @@ router.post("/forgotpassword", async (req, res) => {
       });
     }
   });
-function formatTimeDifference(timeDifference) {
+/*function formatTimeDifference(timeDifference) {
     const hours = Math.floor(timeDifference / 3600);
     const minutes = Math.floor((timeDifference % 3600) / 60);
     const seconds = Math.floor(timeDifference % 60);
@@ -329,9 +329,282 @@ router.post("/checkin", async (req, res) => {
         error: error.message,
       });
     }
+  });*/
+  
+function formatTimeDifference(timeDifference) {
+   /* if (isNaN(timeDifference) || timeDifference <= 0) {
+        return "0hours 0minutes 0seconds";
+    }*/
+
+    const hours = Math.floor(timeDifference / 3600);
+    const minutes = Math.floor((timeDifference % 3600) / 60);
+    const seconds = Math.floor(timeDifference % 60);
+
+    return `${hours}hours ${minutes}minutes ${seconds}seconds`;
+}
+ 
+  
+  router.post("/checkin", async (req, res) => {
+    try {
+      const { username } = req.body;
+  
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      const checkinTime = new Date();
+  
+      const workingHoursEntry = new WorkingHours({
+        staff: user._id,
+        username: username,
+        checkinTime,
+        checkoutTime: null,
+        workingHours: 0,
+      });
+  
+      await workingHoursEntry.save();
+  
+      res.json({
+        message: "Check-in successful",
+        checkinTime,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
   });
   
+  router.post("/checkout", async (req, res) => {
+    try {
+      const { username } = req.body;
+      
 
+  
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+  
+      const checkoutTime = new Date();
+  
+      const workingHoursEntry = await WorkingHours.findOne({
+        staff: user._id,
+        checkoutTime: null,
+       // date: { $gte: new Date(new Date().setHours(00, 00, 00)), $lt: new Date(new Date().setHours(23, 59, 59)) },
+       date: { $gte: new Date(new Date().setHours(0, 0, 0)), $lt: new Date(new Date().setHours(23, 59, 59)) },
+
+
+    });
+  
+      if (workingHoursEntry) {
+        workingHoursEntry.checkoutTime = checkoutTime;
+      
+      const timeDifferenceInSeconds = (checkoutTime - workingHoursEntry.checkinTime) / 1000;
+      console.log("Raw time difference:", timeDifferenceInSeconds);
+      workingHoursEntry.workingHours = formatTimeDifference(timeDifferenceInSeconds);
+      console.log("Formatted working hours:", workingHoursEntry.workingHours);
+    } else {
+        // Create a new entry for checkout
+        workingHoursEntry = new WorkingHours({
+            staff: user._id,
+            username: username, // Include the username
+            checkinTime: null, // Set this to null or some default value
+            checkoutTime,
+            workingHours: "0hours 0minutes 0seconds", // Set this to an appropriate default value
+            date: new Date(), // Set the date to the current date or as needed
+        });
+    }
+
+      await workingHoursEntry.save();
+  
+        res.json({
+          message: "Check-out successful",
+          username: username,
+          checkinTime: workingHoursEntry.checkinTime,
+          checkoutTime,
+          workingHours: workingHoursEntry.workingHours,
+        });
+     /* } else {
+        res.status(400).json({
+          message: "User has not checked in. Please check in first.",
+        });
+      }*/
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+  // Add a new route to get all check-in/check-out entries for all staff
+router.get("/workingHours/all", async (req, res) => {
+    try {
+      const allWorkingHours = await WorkingHours.find().sort({ checkinTime: 'desc' });
+  
+      
+        const formattedWorkingHours = await Promise.all(allWorkingHours.map(async entry => {
+            const user = await User.findById(entry.staff);
+            return {
+        _id: entry._id,
+        username: user ? user.username : 'Unknown',
+        staff: entry.staff,
+        checkinTime: entry.checkinTime,
+        checkoutTime: entry.checkoutTime,
+        workingHours: entry.workingHours, // Use the direct value from the database
+        date: entry.date,
+            };
+    }));
+    
+  
+      res.json({
+        status: "Success",
+        message: "Retrieved all working hours entries successfully",
+        data: formattedWorkingHours,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: "Error",
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+  // Add a new route to get check-in/check-out entries for a specific staff by username
+router.get("/workingHours/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+  
+      const user = await User.findOne({ username });
+  
+      if (!user) {
+        return res.status(404).json({
+          status: "Error",
+          message: "User not found",
+        });
+      }
+  
+      const workingHours = await WorkingHours.find({
+        staff: user._id,
+      }).sort({ checkinTime: 'desc' });
+  
+      
+    const formattedWorkingHours = workingHours.map(entry => ({
+        _id: entry._id,
+        username: username, 
+        staff: entry.staff,
+        checkinTime: entry.checkinTime,
+        checkoutTime: entry.checkoutTime,
+        workingHours: entry.workingHours, // Use the direct value from the database
+        date: entry.date,
+    }));
+    
+      res.json({
+        status: "Success",
+        message: "Retrieved all staff workinghours successfully",
+        data: formattedWorkingHours,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: "Error",
+        message: "An error occurred",
+        error: error.message,
+      });
+    }
+  });
+function addTime(time1, time2) {
+    const [hours1, minutes1, seconds1] = time1.split(' ');
+    const [hours2, minutes2, seconds2] = time2.split(' ');
+
+    const totalHours = parseInt(hours1) + parseInt(hours2);
+    const totalMinutes = parseInt(minutes1) + parseInt(minutes2);
+    const totalSeconds = parseInt(seconds1) + parseInt(seconds2);
+
+    // Convert excess minutes and seconds
+    const minutesFromSeconds = Math.floor(totalSeconds / 60);
+    const remainingSeconds = totalSeconds % 60;
+    const adjustedMinutes = totalMinutes + minutesFromSeconds;
+
+    const hours = totalHours.toString();
+    const minutes = adjustedMinutes.toString();
+    const seconds = remainingSeconds.toString();
+
+    const result = `${hours}hours ${minutes}minutes ${seconds}seconds`;
+
+    return result;
+}
+
+  router.get("/workingHours/:username/perDay", async (req, res) => {
+    try {
+        const { username } = req.params;
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({
+                status: "Error",
+                message: "User not found",
+            });
+        }
+       // const userWorkingHours = await WorkingHours.find({ staff: username }).sort({ checkinTime: 'desc' });
+       const userWorkingHours = await WorkingHours.find({ staff: user._id, }).sort({ checkinTime: 'desc' });
+
+        const dailyWorkingHoursMap = new Map();
+
+        // Calculate per day overall working hours for the specified username
+        userWorkingHours.forEach(entry => {
+            const date = entry.date.toISOString().split('T')[0]; // Extracting date in 'YYYY-MM-DD' format
+         // Parse hours, minutes, and seconds from the workingHours string
+          const [hours, minutes, seconds] = entry.workingHours
+          .match(/(\d+)hours (\d+)minutes (\d+)seconds/)
+           .slice(1)
+           .map(Number);
+            const timeDifferenceInSeconds = hours * 3600 + minutes * 60 + seconds;
+            //const timeDifferenceInSeconds = parseFloat(entry.workingHours);
+            const formattedWorkingHours = formatTimeDifference(timeDifferenceInSeconds);
+            console.log('timeDifferenceInSeconds:', timeDifferenceInSeconds);
+            console.log('formattedWorkingHours:', formattedWorkingHours);
+
+            if (!dailyWorkingHoursMap.has(date)) {
+                dailyWorkingHoursMap.set(date, {
+                    username,
+                    date,
+                    workingHours: "0hours 0minutes 0seconds"
+                });
+            }
+
+            dailyWorkingHoursMap.get(date).workingHours = addTime(dailyWorkingHoursMap.get(date).workingHours, formattedWorkingHours);
+        });
+
+        const formattedDailyWorkingHours = Array.from(dailyWorkingHoursMap.values());
+
+        res.json({
+            status: "Success",
+            message: `Retrieved per day overall working hours for ${username} successfully`,
+            data: formattedDailyWorkingHours,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "Error",
+            message: "An error occurred",
+            error: error.message,
+        });
+    }
+});
+
+  
  
 
 
