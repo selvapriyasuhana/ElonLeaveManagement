@@ -562,10 +562,14 @@ function addTime(time1, time2) {
         userWorkingHours.forEach(entry => {
             const date = entry.date.toISOString().split('T')[0]; // Extracting date in 'YYYY-MM-DD' format
          // Parse hours, minutes, and seconds from the workingHours string
-          const [hours, minutes, seconds] = entry.workingHours
+        /*  const [hours, minutes, seconds] = entry.workingHours
           .match(/(\d+)hours (\d+)minutes (\d+)seconds/)
            .slice(1)
-           .map(Number);
+           .map(Number);*/
+            const matchResult = entry.workingHours.match(/(\d+)hours (\d+)minutes (\d+)seconds/);
+
+       if (matchResult) {
+          const [hours, minutes, seconds] = matchResult.slice(1).map(Number);
             const timeDifferenceInSeconds = hours * 3600 + minutes * 60 + seconds;
             //const timeDifferenceInSeconds = parseFloat(entry.workingHours);
             const formattedWorkingHours = formatTimeDifference(timeDifferenceInSeconds);
@@ -582,6 +586,7 @@ function addTime(time1, time2) {
 
             dailyWorkingHoursMap.get(date).workingHours = addTime(dailyWorkingHoursMap.get(date).workingHours, formattedWorkingHours);
         });
+      
 
         const formattedDailyWorkingHours = Array.from(dailyWorkingHoursMap.values());
 
@@ -590,6 +595,11 @@ function addTime(time1, time2) {
             message: `Retrieved per day overall working hours for ${username} successfully`,
             data: formattedDailyWorkingHours,
         });
+       } else {
+        console.error(`Invalid format for working hours: ${entry.workingHours}`);
+        // You might want to handle this case, e.g., set a default value or skip the entry
+    }
+});
     } catch (error) {
         console.error(error);
         res.status(500).json({
