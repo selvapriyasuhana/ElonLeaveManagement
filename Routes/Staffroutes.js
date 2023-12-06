@@ -541,8 +541,11 @@ function addTime(time1, time2) {
 
   router.get("/workinghours/perday", async (req, res) => {
     try {
-        const { username } = req.body;
-        const user = await User.findOne({ username });
+            
+  //const { username } = req.body;
+      const { username } = req.query;
+  
+      const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(404).json({
