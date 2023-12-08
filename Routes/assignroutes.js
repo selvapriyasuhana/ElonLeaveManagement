@@ -28,7 +28,7 @@ router.post("/assignassets", async (req, res) => {
 });
 
 var assigncontroller = require("../Controller/assigncontroller.js");
-router.route("/assign/getall").get(assigncontroller.index);
+router.route("/getall").get(assigncontroller.index);
 
 router
   .route("/assign/:user_id")
