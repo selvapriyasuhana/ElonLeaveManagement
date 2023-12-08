@@ -16,8 +16,8 @@ var OrgRoutes = require("./Routes/Orgroutes.js");
 //var AttendanceRoutes=require("./Routes/Attendanceroutes.js");
 const apiRoutes = require('./Routes/routes.js');
 const assignRoutes = require('./Routes/assignroutes.js');
-const asset = require('./Routes/assetroutes.js');
-const issue = require('./Routes/issueroutes.js');
+const assetRoutes = require('./Routes/assetroutes.js');
+const issueRoutes = require('./Routes/issueroutes.js');
 var mongodb = require("./Config.js/Mongoconfig.js");
 
 app.use(cors());
@@ -50,9 +50,10 @@ app.use("/organization", OrgRoutes);
 app.use("/staff", StaffRoutes);
 app.use("/staff/leave", LeaveRoutes);
 
-app.use('/api', apiRoutes);
-app.use('/api',assignRoutes);
-app.use('/api',asset);
-app.use('/api',issue);
+app.use('/assets', apiRoutes);
+app.use('/assign',assignRoutes);
+app.use('/assetreq',assetRoutes);
+app.use('/issue',issueRoutes);
+
 
 module.exports = app;
