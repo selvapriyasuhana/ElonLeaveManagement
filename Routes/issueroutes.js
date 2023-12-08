@@ -28,7 +28,7 @@ const sendAssetIssueNotification = async (issueDetails) => {
         console.error('Error sending email:', error.message);
     }};
 
-router.post("/report-issue", async (req, res) => {
+router.post("/reportissue", async (req, res) => {
     try {
         try {
             // Check if the assigned staff member exists in the staffdetails collection
