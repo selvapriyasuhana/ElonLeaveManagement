@@ -43,7 +43,7 @@ router.post("/assetrequired", async (req, res) => {
 });
 
 var assetcontroller = require("../Controller/assetcontroller.js");
-router.route("/assetreq/getall").get(assetcontroller.index);
+router.route("/getall").get(assetcontroller.index);
 
 router
   .route("/assetreq/:user_id")
