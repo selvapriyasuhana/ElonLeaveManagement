@@ -42,6 +42,12 @@ const assetSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    Price:{
+        type:String,
+    },
+    Status:{
+        type:String,
+    },
 });
 
 const Asset = mongoose.model('Asset', assetSchema);
