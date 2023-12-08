@@ -48,10 +48,10 @@ router.post("/addasset", async(req, res) => {
 
 
 var controller = require("../Controller/controller.js");
-router.route("/assets/getall").get(controller.index);
+router.route("/getall").get(controller.index);
 
 router
-  .route("/assets/:user_id")
+  .route("/:user_id")
   .get(controller.view)
   .patch(controller.update)
   .put(controller.update)
