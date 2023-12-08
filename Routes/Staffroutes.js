@@ -13,6 +13,9 @@ const otpGenerator = require("otp-generator");
 const moment = require('moment');
 const WorkingHours = require("../Models/WorkingHoursModel");
 const Staffdetails = require("../Models/Staffmodel.js");
+const jwt = require('jsonwebtoken');
+const jwtSecretKey = 'SecretKey';
+
 
 router.get("/Staff", (req, res) => {
   res.json({
@@ -20,7 +23,7 @@ router.get("/Staff", (req, res) => {
     message: "Welcome Staff signin API",
   });
 });
-router.post("/signin", async (req, res) => {
+/*router.post("/signin", async (req, res) => {
   try {
     const { username, ORGName, password } = req.body;
   const organization = await Organization.findOne({ ORGName });
@@ -54,7 +57,69 @@ router.post("/signin", async (req, res) => {
       error: error.message,
     });
   }
+});*/
+const invalidatedTokens = [];
+
+router.post("/login", async (req, res) => {
+  try {
+    const { username, OrgName } = req.body;
+
+    // Assume you have Organization and Signup models defined
+    const Org = await Organization.findOne({ OrgName });
+    if (!Org) {
+      return res.status(404).json({
+        message: "Organization not found. Staff sign-in denied.",
+      });
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const decryptedPassword = cryptr.decrypt(user.password);
+
+    if (decryptedPassword === req.body.password) {
+      // Generate JWT token
+      const token = jwt.sign({ userId: user._id, userName: user.username }, jwtSecretKey, { expiresIn: '1h' });
+
+      return res.json({
+        message: "Sign-in successful",
+        data: user,
+        token: token,
+      });
+    } else {
+      return res.status(401).json({
+        message: "Incorrect password",
+      });
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+    return res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
 });
+router.post("/logout", (req, res) => {
+    
+  const { token } = req.body;
+  
+  if (invalidatedTokens.includes(token)) {
+    return res.status(401).json({
+      message: "Invalid token",
+    });
+  }
+  invalidatedTokens.push(token);
+
+  return res.json({
+    message: "Logout successful",
+  });
+});
+
 /*router.post("/forgotpassword", async (req, res) => {
   try {
     const { email } = req.body;
