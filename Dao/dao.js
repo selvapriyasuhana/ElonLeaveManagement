@@ -1,97 +1,39 @@
-
 const Asset = require('../Models/model.js');
 
-exports.Dao_index = async function (req, res) {
+exports.Dao_index = async function () {
   try {
-    const users = await Asset.find();
-
-    if (users) {
-      res.json({
-        status: "Success",
-        message: "Got all user details Successfully",
-        data: users,
-      });
-    } else {
-      res.json({
-        status: "Error",
-        message: "No users found",
-      });
-    }
+    const user = await Asset.find();
+    return user.length > 0 ? user : null;
   } catch (err) {
-    res.json({
-      status: "Error",
-      message: err.message,
-    });
+    throw err;
   }
 };
 
-exports.Dao_view = async (req, res) => {
-    try {
-      const user = await Asset.findById(req.params.user_id);
-      if (!user) {
-        return res.json({
-          status: "Error",
-          message: "User not found",
-        });
-      }
-      res.json({
-        status: "Success",
-        message: "User details retrieved successfully",
-        data: user,
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "Error",
-        message: error.message,
-      });
-    }
-  };
-  
-
-exports.Dao_update = async (req, res) => {
-    try {
-    // const id = req.params.user_id;
-    const user = await Asset.findByIdAndUpdate(req.params.user_id,req.body, { new: true });
-    if (user) {
-      res.status(200).json({
-        message: "User Details Updated Successfully",
-        data: user,
-      });
-    } else {
-      res.status(404).json({
-        error: "User Not Found",
-      });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    }
-  } catch (error) {
-    res.status(500).json({
-      error: error,
-    });
-  }
-};
-
-exports.Dao_Delete = async (req, res) => {
+exports.Dao_view = async function (user_id) {
   try {
-  const id = req.params._id;
-  const user = await Asset.findByIdAndDelete(id);
-  if (user) {
-    res.status(200).json({
-      message: "User Details deleted Successfully",
-      // data: user,
-    });
-  } else {
-    res.status(404).json({
-      error: "User Not Found",
-      data : id
-    });
+    const user = await Asset.findById(user_id);
+    return user ? user : null;
+  } catch (error) {
+    throw error;
   }
-} catch (error) {
-  res.status(500).json({
-    error: error,
-  });
-}
 };
 
+exports.Dao_update = async function (user_id, updateData) {
+  try {
+    const user = await Asset.findByIdAndUpdate(user_id, updateData, { new: true });
+    return user ? user : null;
+  } catch (error) {
+    throw error;
+  }
+};
 
-
+exports.Dao_Delete = async function (user_id) {
+  try {
+    const user = await Asset.findByIdAndDelete(user_id);
+    return user ? user : null;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
