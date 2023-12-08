@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
   }
 });
 const Orgcontroller = require("../Controller/Orgcontroller");
-router.route("/get_all").get(Orgcontroller.index);
+router.route("/getall").get(Orgcontroller.index);
 
 router
   .route("/name/:ORGName")
