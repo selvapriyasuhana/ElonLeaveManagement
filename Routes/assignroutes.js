@@ -31,7 +31,7 @@ var assigncontroller = require("../Controller/assigncontroller.js");
 router.route("/getall").get(assigncontroller.index);
 
 router
-  .route("/assign/:user_id")
+  .route("/:user_id")
   .get(assigncontroller.view)
   .patch(assigncontroller.update)
   .put(assigncontroller.update)
