@@ -1,42 +1,55 @@
-Dao = require('../Dao/assetdao.js');
+const Dao = require('../Dao/assetdao.js');  // Replace 'yourDaoFileName' with the actual filename.
 
-exports.Service_index = function(err,callback)
-{
-    Dao.Dao_index(err,callback);
-    if (err) return console.error(err);
-    callback(user);
-}
+exports.Service_index = async function () {
+  try {
+    const users = await Dao.Dao_index();
+    return users;
+  } catch (error) {
+    throw error;
+  }
+};
 
-exports.Service_add = function(err,callback)
-{
-    Dao.Dao_add(err,callback);
-    if (err) return console.error(err);
-    callback(user);
-}
+exports.Service_add = async function (data) {
+  try {
+    const user = await Dao.Dao_add(data);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
-exports.Service_view = function (err, callback)
-{
-    Dao.Dao_view(err,callback);
-    if (err) return console.error(err);
-    callback(user);
-}
+exports.Service_view = async function (user_id) {
+  try {
+    const user = await Dao.Dao_view(user_id);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
-exports.Service_see = function(err, callback){
-    Dao.Dao_see(err,callback);
-    if(err) return console.error(err);
-    callback(user);
-}
+exports.Service_see = async function () {
+  try {
+    const users = await Dao.Dao_see();
+    return users;
+  } catch (error) {
+    throw error;
+  }
+};
 
-exports.Service_update = function(err,callback)
-{
-    Dao.Dao_update(err,callback);
-    if (err) return console.error(err);
-    callback(user);
-}
+exports.Service_update = async function (user_id, data) {
+  try {
+    const user = await Dao.Dao_update(user_id, data);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
 
-exports.Service_Delete = function(err,callback)
-{
-    Dao.Dao_Delete(err,callback);
-    if (err) return console.error(err);
-    callback(user);
-}
+exports.Service_Delete = async function (user_id) {
+  try {
+    const result = await Dao.Dao_Delete(user_id);
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
