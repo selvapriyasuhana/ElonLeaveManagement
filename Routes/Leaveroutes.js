@@ -39,8 +39,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
-
 router.post("/apply",upload.single('file'), async (req, res) => {
   try {
     const {
@@ -96,18 +94,50 @@ router.post("/apply",upload.single('file'), async (req, res) => {
               }
           
        let s3ObjectUrl;
-    if ((Leavetype === "Sickleaves" || Leavetype === "Maternityleaves")) {
+   // if ((Leavetype === "Sickleaves" || Leavetype === "Maternityleaves")) {
         const leaveStartDate = new Date(StartDate);
         const deadlineForSubmission = new Date(leaveStartDate.getTime() + 7 * 24 * 60 * 60 * 1000);
   
         if ((Leavetype === "Sickleaves" && Numberofdays > 1) || (Leavetype === "Maternityleaves")) {
-          if (!req.file) {
+          const leaveData = {
+            username,
+            Name,
+            Leavetype,
+            StartDate,
+            EndDate,
+            Numberofdays,
+            Replacementworker,
+            Reason,
+            Command,
+            Status,
+            Medicalcertificate: {
+                originalName: null,
+                fileName: null,
+                filePath: null,
+                publicUrl: null,
+                deadline: deadlineForSubmission,
+              },
+        };
+    
+        if (!req.file) {
+            console.log('No file provided, but continue with leave application');
+            leaveData.deadline = deadlineForSubmission;
+        // Save the leave application to the database
+        const staff = new Leave(leaveData);
+        await staff.save();
+
+        return res.status(200).json({
+            message: `Leave application submitted for ${Leavetype}. No medical certificate required.`,
+            data: staff,
+        });
+    }
+         /* if (!req.file) {
             return res.status(400).json({
               message: `Medical certificate is required for ${Leavetype === "Sickleaves" ? "sick" : "maternity"} leaves. You have one week to submit the certificate.`,
               deadline: deadlineForSubmission,
             });
-          }
-const fileContent = fs.readFileSync(req.file.path);
+          }*/
+            const fileContent = fs.readFileSync(req.file.path);
 
                 // Dynamically determine Content-Type based on file extension
                 const fileExtension = path.extname(req.file.originalname).toLowerCase();
@@ -127,10 +157,18 @@ const fileContent = fs.readFileSync(req.file.path);
                 const s3BucketUrl = `https://elonleave2023.s3.amazonaws.com`; // Replace with your S3 bucket URL
                 const filePath = `medical_certificates/${req.file.filename}`;
                  s3ObjectUrl = `${s3BucketUrl}/${filePath}`;
-        }
+                  staffMember.Medicalcertificate = {
+                    originalName: req.file.originalname,
+                    fileName: req.file.filename,
+                    filePath: s3ObjectUrl,
+                    publicUrl: s3ObjectUrl,
+                    deadline: deadlineForSubmission,
+        };
     }
          
-    let deadlineForSubmission = new Date(new Date(StartDate).getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+         
+  /*  let deadlineForSubmission = new Date(new Date(StartDate).getTime() + 7 * 24 * 60 * 60 * 1000);
 
     if (req.file) {
       console.log("Processing certificate");
@@ -172,7 +210,7 @@ const fileContent = fs.readFileSync(req.file.path);
       deadline: deadlineForSubmission,
       
     };
-  }
+  }*/
     
     if (
       Leavetype !== "Casualleaves" &&
@@ -184,7 +222,56 @@ const fileContent = fs.readFileSync(req.file.path);
     ) {
       return res.status(400).json({ message: "Invalid leave type." });
     }
+ if (Leavetype === "Casualleaves" && Numberofdays === 1) {
+      // Check if a Casualleaves request was made in the last month
+      const lastMonthCasualLeave = await Leave.findOne({
+        username,
+        Leavetype: "Casualleaves",
+        StartDate: {
+          $gte: new Date(
+            new Date().getFullYear(),
+            new Date().getMonth() - 1,
+            1),
+          $lt: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        },
+      });
+      const currentMonthCasualLeave = await Leave.findOne({
+        username,
+        Leavetype: "Casualleaves",
+        StartDate: {
+            $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+        },
+    });
 
+    // Uncomment the following block if you want to allow only one Casualleaves day per month
+    if (lastMonthCasualLeave || currentMonthCasualLeave) {
+        return res.status(400).json({
+            message: "Only one leave request of Casualleaves is allowed per month.",
+        });
+    }
+
+     
+      const currentDate = new Date();
+      // Convert StartDate from string to Date object
+      const leaveStartDate = new Date(StartDate);
+
+      // Calculate the difference in milliseconds between the leave start date and the current date
+      const differenceInTime = leaveStartDate.getTime() - currentDate.getTime();
+      const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+
+      // Check if the difference is less than 7 days for a casual leave request
+      if (differenceInDays < 7) {
+        return res.status(400).json({
+          message:
+            "Casual leave requests should be made at least a week in advance.",
+        });
+      }
+    } else if (Leavetype === "Casualleaves" && Numberofdays !== 1) {
+        return res.status(400).json({
+            message: "Casualleaves can only be requested for a single day per month.",
+        });
+    }
     if (Leavetype === "Menstrualleaves" && staffMember.Gender !== "Female") {
       return res.json({
         status: "Error",
@@ -234,7 +321,7 @@ const fileContent = fs.readFileSync(req.file.path);
       deadlineForMedicalCertificate.setDate(deadlineForMedicalCertificate.getDate() + 14);
   
 
-    const staff = Leave({
+    const leaveData = {
       username,
       Name,
       Leavetype,
@@ -243,7 +330,6 @@ const fileContent = fs.readFileSync(req.file.path);
       Numberofdays,
       Replacementworker,
       Reason,
-      //menstrualLeaveRequests,
       Command,
       Status,
       Medicalcertificate: {
@@ -257,10 +343,10 @@ deadline: (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves") || req
     : null,
       
 },
-    })
+    };
 
-    console.log("staff:", staff);
-
+    //console.log("staff:", staff);
+ const staff = new Leave(leaveData);
     await staff.save();
     //staffMember[Leavetype] -= Numberofdays;
     console.log("staffMember after save:", staffMember);
