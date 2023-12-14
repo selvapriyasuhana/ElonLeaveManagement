@@ -7,6 +7,8 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 const mime = require('mime-types');
 require('dotenv').config();
+const { uploadFileWithinDeadline } = require('../Controller/uploadFileWithinDeadline');
+
 
 const s3 = new AWS.S3({
   //  region: 'US East (N. Virginia)', // Update with your region
@@ -289,6 +291,30 @@ if (error.code === 11000) {
     });
   }
 });
+router.post("/uploadfileWithindeadline/:user_id", upload.single('file'), async (req, res) => {
+    try {
+      const { Leavetype, Status } = req.body;
+  
+      // Add the conditions from the /apply route
+      if (Status === "accepted" && (Leavetype === "Sickleaves" || Leavetype === "Maternityleaves")) {
+        // Call the uploadFileWithinDeadline function if conditions are met
+        await uploadFileWithinDeadline(req, res);
+      } else {
+        // Handle the case when conditions are not met (if needed)
+        return res.json({
+          status: "Error",
+          message: "Invalid conditions for file upload within deadline",
+        });
+      }
+    } catch (error) {
+      console.error("Error in POST /uploadFileWithinDeadline/:user_id:", error);
+      return res.json({
+        status: "Error",
+        message: "Internal server error",
+      });
+    }
+  });
+ 
 /*function readAndConvertToBase64(filePath) {
     try {
       // Read the file content synchronously
