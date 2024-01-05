@@ -23,7 +23,7 @@ router.get("/Staff", (req, res) => {
     message: "Welcome Staff signin API",
   });
 });
-/*router.post("/signin", async (req, res) => {
+router.post("/signin", async (req, res) => {
   try {
     const { username, ORGName, password } = req.body;
   const organization = await Organization.findOne({ ORGName });
@@ -57,8 +57,8 @@ router.get("/Staff", (req, res) => {
       error: error.message,
     });
   }
-});*/
-const invalidatedTokens = [];
+});
+//const invalidatedTokens = [];
 
 /*router.post("/login", async (req, res) => {
   try {
@@ -80,7 +80,7 @@ const invalidatedTokens = [];
       });
     }*/
 
-router.post("/login", async (req, res) => {
+/*router.post("/login", async (req, res) => {
     try {
       const { username, ORGName, password } = req.body;
   
@@ -144,7 +144,7 @@ router.post("/logout", (req, res) => {
   return res.json({
     message: "Logout successful",
   });
-});
+});*/
 
 /*router.post("/forgotpassword", async (req, res) => {
   try {
